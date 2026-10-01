@@ -1,0 +1,14 @@
+node_modules
+.next
+.env
+.env.*
+!.env.example
+.env*.local
+*.log
+tsconfig.tsbuildinfo
+dev.db
+dev.db-journal
+dev.db-wal
+dev.db-shm
+public/uploads/*
+!public/uploads/.gitkeep
