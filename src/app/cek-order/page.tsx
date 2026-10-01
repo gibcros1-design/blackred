@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { getConfigValue } from "@/services/config";
 import { DEFAULT_ADMIN_WHATSAPP } from "@/services/defaults";
 import { orders } from "@/db/schema";
+import { toPublicOrder } from "@/lib/public-order";
 import { eq, or } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -19,9 +20,10 @@ export default async function CekOrderPage({ searchParams }: CekOrderPageProps) 
   let initialOrder = null;
 
   if (params.code) {
-    initialOrder = await db.query.orders.findFirst({
+    const found = await db.query.orders.findFirst({
       where: or(eq(orders.code, params.code), eq(orders.orderId, params.code)),
     });
+    if (found) initialOrder = toPublicOrder(found);
   }
 
   return (

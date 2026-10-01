@@ -29,6 +29,7 @@ export function CheckoutWizard({ initialRobux, pricing, rekeningList, qrImageUrl
   );
   const [userData, setUserData] = useState({ name: "", robloxUsername: "", whatsapp: "" });
   const [createdOrder, setCreatedOrder] = useState<any>(null);
+  const [proofToken, setProofToken] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -47,8 +48,9 @@ export function CheckoutWizard({ initialRobux, pricing, rekeningList, qrImageUrl
         whatsapp: data.whatsapp,
       });
 
-      if (res.success && res.order) {
+      if (res.success && res.order && res.proofToken) {
         setCreatedOrder(res.order);
+        setProofToken(res.proofToken);
         setStep(3);
       } else {
         setError("Pesanan belum dapat dibuat. Coba lagi.");
@@ -123,6 +125,7 @@ export function CheckoutWizard({ initialRobux, pricing, rekeningList, qrImageUrl
       {step === 4 && createdOrder && (
         <Step4UploadProof
           orderId={createdOrder.orderId}
+          proofToken={proofToken}
           onSubmitProof={submitPaymentProofAction}
           onSuccess={() => setStep(5)}
         />

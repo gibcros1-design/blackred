@@ -23,7 +23,7 @@ export function generateUniqueCode(): number {
   return randomInt(100, 1000); // 100 - 999
 }
 
-/** Token acak kriptografis (16 byte hex). */
+/** Token acak kriptografis untuk otorisasi unggah bukti per order. */
 export function randomToken(): string {
-  return randomBytes(16).toString("hex");
+  return randomBytes(32).toString("hex");
 }

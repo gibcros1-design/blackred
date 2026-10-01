@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: "Bagaimana cara memeriksa status pesanan saya?",
-    a: "Setiap transaksi mendapatkan Order ID dan kode cek 6 karakter. Anda bisa memeriksa statusnya di halaman Cek Order.",
+    a: "Setiap transaksi mendapatkan Order ID dan kode cek 8 karakter. Anda bisa memeriksa statusnya di halaman Cek Order.",
   },
 ];
 

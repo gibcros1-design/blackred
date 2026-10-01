@@ -86,7 +86,7 @@ export function OrderTracker({ initialCode, initialOrder, adminWhatsapp = "" }: 
     <Card className="mx-auto max-w-xl p-5 shadow-sm sm:p-8">
       <h2 className="text-center text-2xl font-semibold tracking-tight">Lacak pesanan</h2>
       <p className="mt-1 text-center text-sm text-muted-foreground">
-        Masukkan kode cek 6 karakter atau nomor Order ID.
+        Masukkan kode cek 8 karakter atau nomor Order ID.
       </p>
 
       <form onSubmit={handleSearch} className="mt-6 flex gap-2">
@@ -94,7 +94,7 @@ export function OrderTracker({ initialCode, initialOrder, adminWhatsapp = "" }: 
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value.toUpperCase())}
-          placeholder="Contoh: A3X7K9 atau RBX-2026..."
+          placeholder="Contoh: A3X7K9M2 atau RBX-2026..."
           aria-label="Kode cek atau Order ID"
           className="min-w-0 uppercase"
         />
@@ -129,7 +129,6 @@ export function OrderTracker({ initialCode, initialOrder, adminWhatsapp = "" }: 
           <dl className="mt-4 divide-y divide-border rounded-lg border border-border px-4 text-sm">
             {[
               ["Order ID", order.orderId],
-              ["Username Roblox", order.robloxUsername],
               ["Jumlah Robux", `${order.robuxAmount.toLocaleString("id-ID")} R$`],
               ["Total harga", formatRupiah(order.totalPrice)],
               ["Waktu order", formatDate(order.createdAt)],

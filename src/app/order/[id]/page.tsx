@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { OrderTracker } from "@/components/tracking/OrderTracker";
 import { getConfigValue } from "@/services/config";
 import { DEFAULT_ADMIN_WHATSAPP } from "@/services/defaults";
+import { toPublicOrder } from "@/lib/public-order";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +16,10 @@ interface Props {
 
 export default async function OrderAliasPage({ params }: Props) {
   const { id } = await params;
-  const initialOrder = await db.query.orders.findFirst({
+  const found = await db.query.orders.findFirst({
     where: or(eq(orders.orderId, id), eq(orders.code, id)),
   });
+  const initialOrder = found ? toPublicOrder(found) : null;
 
   const adminWhatsapp = await getConfigValue<string>("admin_whatsapp", DEFAULT_ADMIN_WHATSAPP);
 

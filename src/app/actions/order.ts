@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { orders } from "@/db/schema";
-import { generateOrderId, generateOrderCode, generateUniqueCode } from "@/services/order";
+import { generateOrderId, generateOrderCode, generateUniqueCode, randomToken } from "@/services/order";
 import { sendTelegramOrderNotification } from "@/services/telegram";
 import { getConfigValue, PricingItem } from "@/services/config";
 import { DEFAULT_PRICING } from "@/services/defaults";
@@ -41,8 +41,9 @@ export async function createOrderAction(formData: {
   const uniqueCode = generateUniqueCode();
   const totalPrice = price + uniqueCode;
   const orderId = generateOrderId();
-  const code = generateOrderCode(6);
+  const code = generateOrderCode(8);
   const id = uuidv4();
+  const proofToken = randomToken();
 
   const newOrder = {
     id,
@@ -55,17 +56,23 @@ export async function createOrderAction(formData: {
     name,
     robloxUsername,
     whatsapp,
+    proofToken,
     status: "pending_payment" as const,
   };
 
   await db.insert(orders).values(newOrder);
 
-  return { success: true as const, order: newOrder };
+  // Token tidak boleh ikut ke klien — cukup di session wizard.
+  const { proofToken: _hidden, ...order } = newOrder;
+  return { success: true as const, order, proofToken };
 }
 
-export async function submitPaymentProofAction(orderId: string, proofUrl: string) {
-  if (typeof orderId !== "string" || typeof proofUrl !== "string") {
+export async function submitPaymentProofAction(orderId: string, proofUrl: string, proofToken: string) {
+  if (typeof orderId !== "string" || typeof proofUrl !== "string" || typeof proofToken !== "string") {
     return { success: false, error: "Permintaan tidak valid" };
+  }
+  if (proofToken.length !== 64) {
+    return { success: false, error: "Token bukti tidak valid" };
   }
   // Hanya izinkan URL internal hasil upload kita sendiri.
   if (!/^\/uploads\/[\w.-]+$/.test(proofUrl)) {
@@ -85,6 +92,10 @@ export async function submitPaymentProofAction(orderId: string, proofUrl: string
 
   if (!order) {
     return { success: false, error: "Pesanan tidak ditemukan" };
+  }
+  // Token bukti hanya diketahui browser yang membuat order ini.
+  if (!order.proofToken || order.proofToken !== proofToken) {
+    return { success: false, error: "Token bukti salah" };
   }
   // Boleh unggah ulang selama belum diproses admin: pending, menunggu verifikasi, atau ditolak.
   if (order.status !== "pending_payment" && order.status !== "waiting_verify" && order.status !== "rejected") {

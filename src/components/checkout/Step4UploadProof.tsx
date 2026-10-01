@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 
 interface Step4Props {
   orderId: string;
+  proofToken: string;
   onSuccess: () => void;
-  onSubmitProof: (orderId: string, proofUrl: string) => Promise<{ success: boolean; error?: string }>;
+  onSubmitProof: (orderId: string, proofUrl: string, proofToken: string) => Promise<{ success: boolean; error?: string }>;
 }
 
-export function Step4UploadProof({ orderId, onSuccess, onSubmitProof }: Step4Props) {
+export function Step4UploadProof({ orderId, proofToken, onSuccess, onSubmitProof }: Step4Props) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -51,7 +52,7 @@ export function Step4UploadProof({ orderId, onSuccess, onSubmitProof }: Step4Pro
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Gagal mengunggah foto.");
 
-      const result = await onSubmitProof(orderId, data.url);
+      const result = await onSubmitProof(orderId, data.url, proofToken);
       if (!result.success) throw new Error(result.error || "Gagal menyimpan konfirmasi.");
 
       onSuccess();

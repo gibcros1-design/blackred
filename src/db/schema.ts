@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm";
 export const orders = sqliteTable("orders", {
   id: text("id").primaryKey(), // UUID v4
   orderId: text("order_id").notNull().unique(), // RBX-YYYYMMDD-XXXXX
-  code: text("code").notNull().unique(), // 6 char alphanumeric
+  code: text("code").notNull().unique(), // 8 char alphanumeric
   robuxAmount: integer("robux_amount").notNull(),
   price: integer("price").notNull(), // Base nominal price in IDR
   uniqueCode: integer("unique_code").notNull(), // 3 digit unique transfer code
@@ -16,6 +16,7 @@ export const orders = sqliteTable("orders", {
     enum: ["pending_payment", "waiting_verify", "approved", "processing", "completed", "rejected", "expired"]
   }).notNull().default("pending_payment"),
   paymentProof: text("payment_proof"), // image URL or base64 / uploads path
+  proofToken: text("proof_token").notNull().default(""), // wajib untuk submitPaymentProofAction
   adminNote: text("admin_note"),
   createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
   updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),

@@ -21,13 +21,13 @@ function rateLimited(key: string): boolean {
 }
 
 // Field yang memang dipakai tampilan pelanggan — jangan bocorkan sisanya.
+// robloxUsername, whatsapp, dan paymentProof sengaja tidak disertakan.
 const SAFE_FIELDS = [
   orders.orderId,
   orders.code,
   orders.status,
   orders.robuxAmount,
   orders.totalPrice,
-  orders.robloxUsername,
   orders.adminNote,
   orders.createdAt,
 ];
