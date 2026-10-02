@@ -3,7 +3,6 @@ import { orders } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
-import { getProofSignedUrl } from "@/lib/supabase";
 import { OrderDetailActions } from "@/components/admin/OrderDetailActions";
 import { statusLabels, statusBadge } from "@/components/admin/OrdersTable";
 import Link from "next/link";
@@ -24,10 +23,6 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   const order = await db.query.orders.findFirst({ where: eq(orders.id, id) });
 
   if (!order) notFound();
-
-  const proofUrl = order.paymentProof
-    ? await getProofSignedUrl(order.paymentProof.replace(/^proofs\//, ""))
-    : null;
 
   const waLink = `https://wa.me/${order.whatsapp.replace(/^0/, "62")}?text=${encodeURIComponent(
     `Halo ${order.name}, kami dari Admin BlackRedRoblox mengenai pesanan Anda (${order.orderId}).`,
@@ -90,17 +85,10 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </CardHeader>
           <CardContent className="flex flex-1 flex-col">
             <div className="flex flex-1 flex-col items-center justify-center rounded-md border border-border bg-stone-50 p-4">
-              {proofUrl ? (
-                <a href={proofUrl} target="_blank" rel="noreferrer" className="group flex flex-col items-center">
-                  <img
-                    src={proofUrl}
-                    alt="Bukti transfer pelanggan"
-                    className="max-h-64 rounded-md border border-border object-contain transition-opacity duration-150 group-hover:opacity-90"
-                  />
-                  <span className="mt-3 flex min-h-11 items-center gap-1 text-sm underline underline-offset-4">
-                    Buka gambar ukuran penuh <ExternalLink className="h-4 w-4" />
-                  </span>
-                </a>
+              {order.paymentProof ? (
+                <p className="py-16 text-center text-sm text-muted-foreground">
+                  Bukti transfer diterima — lihat gambar di Telegram admin.
+                </p>
               ) : (
                 <p className="py-16 text-center text-sm text-muted-foreground">
                   Bukti transfer belum diunggah.

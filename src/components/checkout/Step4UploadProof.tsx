@@ -6,7 +6,7 @@ interface Step4Props {
   orderId: string;
   proofToken: string;
   onSuccess: () => void;
-  onSubmitProof: (orderId: string, proofUrl: string, proofToken: string) => Promise<{ success: boolean; error?: string }>;
+  onSubmitProof: (orderId: string, proofToken: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 export function Step4UploadProof({ orderId, proofToken, onSuccess, onSubmitProof }: Step4Props) {
@@ -47,12 +47,14 @@ export function Step4UploadProof({ orderId, proofToken, onSuccess, onSubmitProof
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("orderId", orderId);
+      formData.append("proofToken", proofToken);
 
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Gagal mengunggah foto.");
 
-      const result = await onSubmitProof(orderId, data.url, proofToken);
+      const result = await onSubmitProof(orderId, proofToken);
       if (!result.success) throw new Error(result.error || "Gagal menyimpan konfirmasi.");
 
       onSuccess();

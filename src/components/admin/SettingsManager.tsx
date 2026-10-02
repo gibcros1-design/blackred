@@ -47,7 +47,7 @@ export function SettingsManager({
   const [bannerError, setBannerError] = useState("");
   const [uploadingBanner, setUploadingBanner] = useState(false);
 
-  const uploadImage = async (file: File): Promise<string> => {
+  const uploadImage = async (file: File, bucket?: string): Promise<string> => {
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       throw new Error("Format harus JPG, PNG, atau WEBP.");
     }
@@ -56,6 +56,7 @@ export function SettingsManager({
     }
     const fd = new FormData();
     fd.append("file", file);
+    if (bucket) fd.append("bucket", bucket);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     const data = await res.json();
     if (!res.ok || !data.success) throw new Error(data.error || "Gagal unggah.");
@@ -70,7 +71,7 @@ export function SettingsManager({
     setQrError("");
     setUploadingQr(true);
     try {
-      setQrImageUrl(await uploadImage(file));
+      setQrImageUrl(await uploadImage(file, "assets"));
       toast.success("Gambar QRIS diganti. Tekan Simpan untuk menerapkan.");
     } catch (err: any) {
       setQrError(err.message || "Gagal mengunggah gambar QRIS.");
@@ -87,7 +88,7 @@ export function SettingsManager({
     setBannerError("");
     setUploadingBanner(true);
     try {
-      setBannerImageUrl(await uploadImage(file));
+      setBannerImageUrl(await uploadImage(file, "assets"));
       toast.success("Banner diganti. Tekan Simpan untuk menerapkan.");
     } catch (err: any) {
       setBannerError(err.message || "Gagal mengunggah banner.");
