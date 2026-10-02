@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Rubik, Nunito_Sans } from "next/font/google";
 import { Toaster } from "sonner";
+import { getConfigValue } from "@/services/config";
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -24,15 +26,21 @@ export const metadata: Metadata = {
   keywords: ["robux murah", "topup robux", "beli robux", "roblox indonesia"],
 };
 
-export default function RootLayout({
+// Layout baca config dari DB — paksa render per-request supaya nomor WA terbaru selalu ikut.
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const adminWhatsapp = await getConfigValue<string>("admin_whatsapp", "");
+
   return (
     <html lang="id" className={`${rubik.variable} ${nunito.variable}`}>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent">
         {children}
+        <FloatingWhatsApp whatsapp={adminWhatsapp} />
         <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
