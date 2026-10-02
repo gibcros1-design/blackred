@@ -6,7 +6,7 @@ import { db } from "@/db";
 import { orders } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getConfigValue } from "@/services/config";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, escapeTelegramHtml } from "@/lib/utils";
 
 const EXT_BY_TYPE: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -31,10 +31,10 @@ async function sendProofToTelegram(file: File, order: typeof orders.$inferSelect
 
   const caption = [
     "📥 <b>Bukti transfer diterima</b>",
-    `Order ID: <code>${order.orderId}</code>`,
-    `Nama: ${order.name}`,
+    `Order ID: <code>${escapeTelegramHtml(order.orderId)}</code>`,
+    `Nama: ${escapeTelegramHtml(order.name)}`,
     `Total: ${formatRupiah(order.totalPrice)}`,
-    `Username Roblox: <b>${order.robloxUsername}</b>`,
+    `Username Roblox: <b>${escapeTelegramHtml(order.robloxUsername)}</b>`,
   ].join("\n");
 
   const form = new FormData();
