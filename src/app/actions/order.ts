@@ -16,53 +16,58 @@ export async function createOrderAction(formData: {
   robloxUsername: string;
   whatsapp: string;
 }) {
-  if (typeof formData.robuxAmount !== "number" || !Number.isFinite(formData.robuxAmount)) {
-    return { success: false as const, error: "Nominal tidak valid." };
+  try {
+    if (typeof formData.robuxAmount !== "number" || !Number.isFinite(formData.robuxAmount)) {
+      return { success: false as const, error: "Nominal tidak valid." };
+    }
+
+    // Harga selalu dari server — input klien tidak pernah dipercaya.
+    const pricing = await getConfigValue<PricingItem[]>("pricing", DEFAULT_PRICING);
+    const match = pricing.find((p) => p.robux === formData.robuxAmount);
+    if (!match) {
+      return { success: false as const, error: "Nominal tidak tersedia." };
+    }
+    const price = match.price;
+
+    const name = (formData.name ?? "").trim().slice(0, 80);
+    const robloxUsername = (formData.robloxUsername ?? "").trim().slice(0, 40);
+    const whatsapp = (formData.whatsapp ?? "").trim().replace(/[^\d+]/g, "").slice(0, 20);
+
+    if (!name || !robloxUsername || !whatsapp) {
+      return { success: false as const, error: "Data pemesan tidak lengkap." };
+    }
+
+    const uniqueCode = generateUniqueCode();
+    const totalPrice = price + uniqueCode;
+    const orderId = generateOrderId();
+    const code = generateOrderCode(8);
+    const id = uuidv4();
+    const proofToken = randomToken();
+
+    const newOrder = {
+      id,
+      orderId,
+      code,
+      robuxAmount: formData.robuxAmount,
+      price,
+      uniqueCode,
+      totalPrice,
+      name,
+      robloxUsername,
+      whatsapp,
+      proofToken,
+      status: "pending_payment" as const,
+    };
+
+    await db.insert(orders).values(newOrder);
+
+    // Token tidak boleh ikut ke klien — cukup di session wizard.
+    const { proofToken: _hidden, ...order } = newOrder;
+    return { success: true as const, order, proofToken };
+  } catch (error) {
+    console.error("createOrderAction error:", error);
+    return { success: false as const, error: `Gagal membuat pesanan: ${(error as Error).message}` };
   }
-
-  // Harga selalu dari server — input klien tidak pernah dipercaya.
-  const pricing = await getConfigValue<PricingItem[]>("pricing", DEFAULT_PRICING);
-  const match = pricing.find((p) => p.robux === formData.robuxAmount);
-  if (!match) {
-    return { success: false as const, error: "Nominal tidak tersedia." };
-  }
-  const price = match.price;
-
-  const name = (formData.name ?? "").trim().slice(0, 80);
-  const robloxUsername = (formData.robloxUsername ?? "").trim().slice(0, 40);
-  const whatsapp = (formData.whatsapp ?? "").trim().replace(/[^\d+]/g, "").slice(0, 20);
-
-  if (!name || !robloxUsername || !whatsapp) {
-    return { success: false as const, error: "Data pemesan tidak lengkap." };
-  }
-
-  const uniqueCode = generateUniqueCode();
-  const totalPrice = price + uniqueCode;
-  const orderId = generateOrderId();
-  const code = generateOrderCode(8);
-  const id = uuidv4();
-  const proofToken = randomToken();
-
-  const newOrder = {
-    id,
-    orderId,
-    code,
-    robuxAmount: formData.robuxAmount,
-    price,
-    uniqueCode,
-    totalPrice,
-    name,
-    robloxUsername,
-    whatsapp,
-    proofToken,
-    status: "pending_payment" as const,
-  };
-
-  await db.insert(orders).values(newOrder);
-
-  // Token tidak boleh ikut ke klien — cukup di session wizard.
-  const { proofToken: _hidden, ...order } = newOrder;
-  return { success: true as const, order, proofToken };
 }
 
 export async function submitPaymentProofAction(orderId: string, proofToken: string) {

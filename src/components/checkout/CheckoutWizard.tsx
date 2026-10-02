@@ -53,10 +53,10 @@ export function CheckoutWizard({ initialRobux, pricing, rekeningList, qrImageUrl
         setProofToken(res.proofToken);
         setStep(3);
       } else {
-        setError("Pesanan belum dapat dibuat. Coba lagi.");
+        setError(res.error || "Pesanan belum dapat dibuat. Coba lagi.");
       }
-    } catch {
-      setError("Pesanan belum dapat dibuat. Coba lagi.");
+    } catch (err) {
+      setError(`Pesanan belum dapat dibuat. ${(err as Error).message}`);
     } finally {
       setSubmitting(false);
     }
