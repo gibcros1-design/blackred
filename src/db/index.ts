@@ -1,10 +1,11 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
-import path from "path";
 
-const dbPath = path.resolve(process.cwd(), "dev.db");
-const sqlite = new Database(dbPath);
-sqlite.pragma("journal_mode = WAL");
+const url = process.env.DATABASE_URL;
+if (!url) throw new Error("Env DATABASE_URL wajib diisi (connection string Supabase).");
 
-export const db = drizzle(sqlite, { schema });
+// pooler Supabase (?pgbouncer=true) untuk serverless — jagalah jumlah koneksi kecil.
+const client = postgres(url, { max: 5, prepare: false });
+
+export const db = drizzle(client, { schema });

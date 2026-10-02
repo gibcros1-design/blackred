@@ -6,8 +6,7 @@ import { generateOrderId, generateOrderCode, generateUniqueCode, randomToken } f
 import { sendTelegramOrderNotification } from "@/services/telegram";
 import { getConfigValue, PricingItem } from "@/services/config";
 import { DEFAULT_PRICING } from "@/services/defaults";
-import { stat } from "fs/promises";
-import path from "path";
+import { proofExists } from "@/lib/supabase";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
@@ -74,15 +73,12 @@ export async function submitPaymentProofAction(orderId: string, proofUrl: string
   if (proofToken.length !== 64) {
     return { success: false, error: "Token bukti tidak valid" };
   }
-  // Hanya izinkan URL internal hasil upload kita sendiri.
-  if (!/^\/uploads\/[\w.-]+$/.test(proofUrl)) {
+  // Hanya izinkan path internal bucket proofs/ — bukan URL sembarang.
+  if (!/^proofs\/[\w.-]+$/.test(proofUrl)) {
     return { success: false, error: "File bukti tidak valid" };
   }
-  // Wajib benar-benar ada di disk — path tebakan tidak bisa dipakai.
-  const proofPath = path.join(process.cwd(), "public", proofUrl);
-  try {
-    await stat(proofPath);
-  } catch {
+  // Wajib benar-benar ada di Supabase Storage — path tebakan tidak bisa dipakai.
+  if (!(await proofExists(proofUrl))) {
     return { success: false, error: "File bukti tidak ditemukan" };
   }
 

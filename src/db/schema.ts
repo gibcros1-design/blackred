@@ -1,7 +1,7 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { pgTable, text, integer } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
-export const orders = sqliteTable("orders", {
+export const orders = pgTable("orders", {
   id: text("id").primaryKey(), // UUID v4
   orderId: text("order_id").notNull().unique(), // RBX-YYYYMMDD-XXXXX
   code: text("code").notNull().unique(), // 8 char alphanumeric
@@ -15,21 +15,21 @@ export const orders = sqliteTable("orders", {
   status: text("status", {
     enum: ["pending_payment", "waiting_verify", "approved", "processing", "completed", "rejected", "expired"]
   }).notNull().default("pending_payment"),
-  paymentProof: text("payment_proof"), // image URL or base64 / uploads path
+  paymentProof: text("payment_proof"), // path objek Supabase Storage (proofs/...)
   proofToken: text("proof_token").notNull().default(""), // wajib untuk submitPaymentProofAction
   adminNote: text("admin_note"),
-  createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
-  updatedAt: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+  createdAt: text("created_at").default(sql`(to_char(now() at time zone 'utc', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'))`).notNull(),
+  updatedAt: text("updated_at").default(sql`(to_char(now() at time zone 'utc', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'))`).notNull(),
 });
 
-export const admins = sqliteTable("admins", {
+export const admins = pgTable("admins", {
   id: text("id").primaryKey(),
   username: text("username").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
-  createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
+  createdAt: text("created_at").default(sql`(to_char(now() at time zone 'utc', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'))`).notNull(),
 });
 
-export const config = sqliteTable("config", {
+export const config = pgTable("config", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
 });

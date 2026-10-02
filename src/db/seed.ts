@@ -1,3 +1,4 @@
+import "dotenv/config"; // tsx tidak auto-load .env
 import { db } from "./index";
 import { admins, config } from "./schema";
 import { DEFAULT_PRICING, DEFAULT_REKENING } from "@/services/defaults";

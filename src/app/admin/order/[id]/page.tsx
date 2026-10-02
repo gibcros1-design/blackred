@@ -3,6 +3,7 @@ import { orders } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
+import { getProofSignedUrl } from "@/lib/supabase";
 import { OrderDetailActions } from "@/components/admin/OrderDetailActions";
 import { statusLabels, statusBadge } from "@/components/admin/OrdersTable";
 import Link from "next/link";
@@ -23,6 +24,10 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   const order = await db.query.orders.findFirst({ where: eq(orders.id, id) });
 
   if (!order) notFound();
+
+  const proofUrl = order.paymentProof
+    ? await getProofSignedUrl(order.paymentProof.replace(/^proofs\//, ""))
+    : null;
 
   const waLink = `https://wa.me/${order.whatsapp.replace(/^0/, "62")}?text=${encodeURIComponent(
     `Halo ${order.name}, kami dari Admin BlackRedRoblox mengenai pesanan Anda (${order.orderId}).`,
@@ -85,10 +90,10 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </CardHeader>
           <CardContent className="flex flex-1 flex-col">
             <div className="flex flex-1 flex-col items-center justify-center rounded-md border border-border bg-stone-50 p-4">
-              {order.paymentProof ? (
-                <a href={order.paymentProof} target="_blank" rel="noreferrer" className="group flex flex-col items-center">
+              {proofUrl ? (
+                <a href={proofUrl} target="_blank" rel="noreferrer" className="group flex flex-col items-center">
                   <img
-                    src={order.paymentProof}
+                    src={proofUrl}
                     alt="Bukti transfer pelanggan"
                     className="max-h-64 rounded-md border border-border object-contain transition-opacity duration-150 group-hover:opacity-90"
                   />

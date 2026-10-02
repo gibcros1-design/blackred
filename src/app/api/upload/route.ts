@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
 import { randomBytes } from "crypto";
-import path from "path";
+import { supabaseAdmin, PROOFS_BUCKET } from "@/lib/supabase";
 
 const EXT_BY_TYPE: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -55,16 +54,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Isi file bukan gambar yang valid." }, { status: 400 });
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
-
     const filename = `proof_${Date.now()}_${randomBytes(8).toString("hex")}.${ext}`;
-    const filePath = path.join(uploadDir, filename);
+    const objectPath = filename; // flat di root bucket
 
-    await writeFile(filePath, buffer);
+    const { error } = await supabaseAdmin()
+      .storage.from(PROOFS_BUCKET)
+      .upload(objectPath, buffer, { contentType: file.type, upsert: false });
+
+    if (error) {
+      console.error("Supabase upload error:", error.message);
+      return NextResponse.json({ error: "Gagal mengunggah gambar" }, { status: 500 });
+    }
 
     return NextResponse.json({
-      url: `/uploads/${filename}`,
+      url: `proofs/${objectPath}`,
       success: true,
     });
   } catch (error) {
