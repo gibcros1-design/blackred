@@ -31,22 +31,22 @@ export default async function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard pesanan</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Dashboard pesanan</h1>
+        <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
           Kelola dan proses transaksi top-up Roblox.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-4">
         {metrics.map(({ key, label, icon: Icon }) => (
-          <div key={key} className="rounded-lg border border-border bg-card p-4 shadow-sm">
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span className="text-sm">{label}</span>
-              <Icon className="h-4 w-4" aria-hidden="true" />
+          <div key={key} className="rounded-lg border border-border bg-card p-3 sm:p-4 shadow-xs">
+            <div className="flex items-center justify-between gap-1 text-muted-foreground">
+              <span className="text-xs sm:text-sm font-medium line-clamp-1">{label}</span>
+              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" aria-hidden="true" />
             </div>
-            <div className={`mt-2 text-xl font-bold tracking-tight sm:text-2xl ${values[key].valueClass || ""}`}>
+            <div className={`mt-1.5 text-lg sm:text-2xl font-bold tracking-tight truncate ${values[key].valueClass || ""}`}>
               {values[key].display}
             </div>
           </div>

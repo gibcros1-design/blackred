@@ -156,12 +156,12 @@ export function SettingsManager({
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="flex-row items-center justify-between gap-4 pb-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
           <div>
             <CardTitle className="text-base">Harga nominal Robux</CardTitle>
             <p className="text-sm text-muted-foreground">Atur jumlah Robux dan harga tiap paket.</p>
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={handleAddPricing}>
+          <Button type="button" variant="outline" size="sm" onClick={handleAddPricing} className="self-start sm:self-auto shrink-0">
             <Plus className="h-4 w-4" /> Tambah paket
           </Button>
         </CardHeader>
@@ -206,25 +206,25 @@ export function SettingsManager({
       </Card>
 
       <Card>
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
           <div>
             <CardTitle className="text-base">Rekening tujuan transfer</CardTitle>
             <p className="text-sm text-muted-foreground">Ditampilkan kepada pembeli.</p>
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={handleAddRekening}>
-            <Plus className="h-4 w-4" /> Tambah
+          <Button type="button" variant="outline" size="sm" onClick={handleAddRekening} className="self-start sm:self-auto shrink-0">
+            <Plus className="h-4 w-4" /> Tambah rekening
           </Button>
         </CardHeader>
         <CardContent className="space-y-3">
           {rekening.map((r, idx) => (
-            <div key={idx} className="flex flex-col gap-2 rounded-md border border-border bg-stone-50 p-3 sm:flex-row">
+            <div key={idx} className="flex flex-col gap-2 rounded-md border border-border bg-stone-50 p-3 sm:flex-row sm:items-center">
               <Input
                 type="text"
                 aria-label="Nama bank atau e-wallet"
                 placeholder="Nama bank / e-wallet"
                 value={r.bank}
                 onChange={(e) => handleRekeningChange(idx, "bank", e.target.value)}
-                className="sm:w-1/4"
+                className="sm:w-1/4 text-sm"
               />
               <Input
                 type="text"
@@ -232,7 +232,7 @@ export function SettingsManager({
                 placeholder="Nomor rekening / HP"
                 value={r.nomor}
                 onChange={(e) => handleRekeningChange(idx, "nomor", e.target.value)}
-                className="sm:w-2/4 font-mono"
+                className="sm:w-2/4 font-mono text-sm"
               />
               <Input
                 type="text"
@@ -240,15 +240,16 @@ export function SettingsManager({
                 placeholder="Atas nama"
                 value={r.atasNama}
                 onChange={(e) => handleRekeningChange(idx, "atasNama", e.target.value)}
-                className="sm:w-1/4"
+                className="sm:w-1/4 text-sm"
               />
               <button
                 type="button"
                 aria-label="Hapus rekening"
                 onClick={() => handleRemoveRekening(idx)}
-                className="flex min-h-11 shrink-0 items-center justify-center text-muted-foreground transition-colors duration-150 hover:text-destructive sm:self-stretch"
+                className="flex h-9 items-center justify-center gap-1.5 rounded-md border border-dashed border-border/80 text-xs text-muted-foreground transition-colors duration-150 hover:border-destructive hover:bg-destructive/10 hover:text-destructive sm:h-10 sm:w-10 sm:shrink-0 sm:border-none"
               >
                 <Trash2 className="h-4 w-4" />
+                <span className="sm:hidden font-medium">Hapus rekening</span>
               </button>
             </div>
           ))}
@@ -321,7 +322,7 @@ export function SettingsManager({
       </Card>
 
       <Card>
-        <CardHeader className="flex-row items-center justify-between gap-4 pb-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
           <div>
             <CardTitle className="text-base">Testimoni pelanggan</CardTitle>
             <p className="text-sm text-muted-foreground">Hanya tampilkan ulasan nyata dengan izin pelanggan.</p>
@@ -331,6 +332,7 @@ export function SettingsManager({
             variant="outline"
             size="sm"
             onClick={() => setTestimonials([...testimonials, { name: "", quote: "" }])}
+            className="self-start sm:self-auto shrink-0"
           >
             <Plus className="h-4 w-4" /> Tambah ulasan
           </Button>
@@ -341,7 +343,7 @@ export function SettingsManager({
               Belum ada testimoni. Bagian ini tidak ditampilkan di homepage sampai admin menambahkan ulasan.
             </p>
           ) : testimonials.map((item, idx) => (
-            <div key={idx} className="grid gap-3 rounded-md border border-border bg-stone-50 p-3 sm:grid-cols-[1fr_2fr_120px_auto]">
+            <div key={idx} className="flex flex-col gap-2.5 rounded-md border border-border bg-stone-50 p-3 sm:grid sm:grid-cols-[1fr_2fr_130px_auto] sm:items-center">
               <Input
                 aria-label="Nama pelanggan"
                 placeholder="Nama (dengan izin)"
@@ -351,6 +353,7 @@ export function SettingsManager({
                   next[idx] = { ...next[idx], name: e.target.value };
                   setTestimonials(next);
                 }}
+                className="text-sm"
               />
               <Input
                 aria-label="Isi ulasan"
@@ -361,6 +364,7 @@ export function SettingsManager({
                   next[idx] = { ...next[idx], quote: e.target.value };
                   setTestimonials(next);
                 }}
+                className="text-sm"
               />
               <Input
                 aria-label="Jumlah Robux (opsional)"
@@ -373,14 +377,16 @@ export function SettingsManager({
                   next[idx] = { ...next[idx], robux: parseInt(e.target.value, 10) || undefined };
                   setTestimonials(next);
                 }}
+                className="text-sm font-mono"
               />
               <button
                 type="button"
                 aria-label="Hapus testimoni"
                 onClick={() => setTestimonials(testimonials.filter((_, i) => i !== idx))}
-                className="flex min-h-11 items-center justify-center text-muted-foreground hover:text-destructive"
+                className="flex h-9 items-center justify-center gap-1.5 rounded-md border border-dashed border-border/80 text-xs text-muted-foreground transition-colors duration-150 hover:border-destructive hover:bg-destructive/10 hover:text-destructive sm:h-10 sm:w-10 sm:shrink-0 sm:border-none"
               >
                 <Trash2 className="h-4 w-4" />
+                <span className="sm:hidden font-medium">Hapus ulasan</span>
               </button>
             </div>
           ))}
@@ -465,8 +471,8 @@ export function SettingsManager({
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button type="button" disabled={saving} onClick={handleSave} size="lg">
+      <div className="flex justify-end pt-2">
+        <Button type="button" disabled={saving} onClick={handleSave} size="lg" className="w-full sm:w-auto shadow-xs gap-2">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           Simpan pengaturan
         </Button>

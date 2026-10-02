@@ -19,7 +19,12 @@ export async function getConfigValue<T>(key: string, defaultValue: T): Promise<T
       where: eq(config.key, key),
     });
     if (!row || !row.value) return defaultValue;
-    return JSON.parse(row.value) as T;
+    try {
+      return JSON.parse(row.value) as T;
+    } catch {
+      // Nilai string tersimpan mentah (tanpa kutip JSON) — amankan sebagai string.
+      return typeof defaultValue === "string" ? (row.value as unknown as T) : defaultValue;
+    }
   } catch {
     return defaultValue;
   }

@@ -43,17 +43,17 @@ export function OrderDetailActions({ orderId, currentStatus, initialNote }: Prop
     <div className="space-y-4">
       <div>
         <label htmlFor="admin-note" className="block text-sm font-medium">Catatan admin</label>
-        <p className="mt-1 text-xs text-muted-foreground">Catatan ini dapat dilihat oleh pembeli.</p>
+        <p className="mt-1 text-xs text-muted-foreground">Catatan ini dapat dilihat oleh pembeli pada halaman status pesanan.</p>
         <Input
           id="admin-note"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="Contoh: Robux telah dikirim via Group Payout."
-          className="mt-2"
+          className="mt-2 text-sm"
         />
       </div>
 
-      <div className="flex flex-wrap gap-2 pt-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1">
         {actions.map(({ status: nextStatus, label, icon: Icon, destructive = false }) => (
           <Button
             key={nextStatus}
@@ -61,9 +61,14 @@ export function OrderDetailActions({ orderId, currentStatus, initialNote }: Prop
             variant={destructive ? "destructive" : status === nextStatus ? "secondary" : "outline"}
             disabled={loading}
             onClick={() => handleUpdate(nextStatus)}
+            className="w-full justify-center h-10 text-xs sm:text-sm font-medium"
           >
-            {loading && status === nextStatus ? <Loader2 className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
-            {label}
+            {loading && status === nextStatus ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Icon className="h-4 w-4" />
+            )}
+            <span>{label}</span>
           </Button>
         ))}
       </div>

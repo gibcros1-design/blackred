@@ -6,7 +6,7 @@ import { formatRupiah, formatDate } from "@/lib/utils";
 import { OrderDetailActions } from "@/components/admin/OrderDetailActions";
 import { statusLabels, statusBadge } from "@/components/admin/OrdersTable";
 import Link from "next/link";
-import { ArrowLeft, MessageSquare, ExternalLink } from "lucide-react";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,17 +40,25 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   ];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <Link href="/admin" className="inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground">
+    <div className="mx-auto max-w-4xl space-y-5 sm:space-y-6">
+      <Link
+        href="/admin"
+        className="inline-flex min-h-11 items-center gap-1.5 text-xs sm:text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4" /> Kembali ke daftar pesanan
       </Link>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Detail pesanan</h1>
-          <p className="mt-1 font-mono text-sm text-muted-foreground">{order.orderId}</p>
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Detail pesanan</h1>
+          <p className="mt-1 font-mono text-xs sm:text-sm text-muted-foreground break-all">{order.orderId}</p>
         </div>
-        <a href={waLink} target="_blank" rel="noreferrer" className={buttonVariants()}>
+        <a
+          href={waLink}
+          target="_blank"
+          rel="noreferrer"
+          className={cn(buttonVariants(), "w-full sm:w-auto justify-center gap-2")}
+        >
           <MessageSquare className="h-4 w-4" /> Hubungi pelanggan
         </a>
       </div>
@@ -66,11 +74,11 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           </CardHeader>
           <CardContent>
-            <dl className="divide-y divide-border text-sm">
+            <dl className="divide-y divide-border text-xs sm:text-sm">
               {details.map(([label, value]) => (
-                <div key={label} className="flex justify-between gap-4 py-2.5">
-                  <dt className="text-muted-foreground">{label}</dt>
-                  <dd className={`text-right font-medium ${label === "Total pembayaran" ? "font-semibold" : ""}`}>
+                <div key={label} className="flex justify-between gap-3 py-2.5">
+                  <dt className="text-muted-foreground shrink-0">{label}</dt>
+                  <dd className={`text-right font-medium break-all ${label === "Total pembayaran" ? "font-semibold text-primary" : ""}`}>
                     {value}
                   </dd>
                 </div>
@@ -86,12 +94,12 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           <CardContent className="flex flex-1 flex-col">
             <div className="flex flex-1 flex-col items-center justify-center rounded-md border border-border bg-stone-50 p-4">
               {order.paymentProof ? (
-                <p className="py-16 text-center text-sm text-muted-foreground">
-                  Bukti transfer diterima — lihat gambar di Telegram admin.
+                <p className="py-12 text-center text-xs sm:text-sm text-muted-foreground">
+                  Bukti transfer diterima — lihat screenshot di Telegram admin.
                 </p>
               ) : (
-                <p className="py-16 text-center text-sm text-muted-foreground">
-                  Bukti transfer belum diunggah.
+                <p className="py-12 text-center text-xs sm:text-sm text-muted-foreground">
+                  Bukti transfer belum diunggah oleh pembeli.
                 </p>
               )}
             </div>
