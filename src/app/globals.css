@@ -96,6 +96,14 @@ h1, h2, h3, h4, h5, h6 {
 .accordion[data-open="true"] { grid-template-rows: 1fr; }
 .accordion > * { overflow: hidden; }
 
+/* Validasi input gagal: goyang sekali lalu berhenti. */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.shake { animation: shake 360ms ease-in-out; }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

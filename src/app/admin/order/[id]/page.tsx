@@ -1,9 +1,10 @@
 import { db } from "@/db";
-import { orders } from "@/db/schema";
+import { orders, aktivasiCodes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { OrderDetailActions } from "@/components/admin/OrderDetailActions";
+import { AktivasiCodeCard } from "@/components/admin/AktivasiCodeCard";
 import { statusLabels, statusBadge } from "@/components/admin/OrdersTable";
 import Link from "next/link";
 import { ArrowLeft, MessageSquare } from "lucide-react";
@@ -23,6 +24,10 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   const order = await db.query.orders.findFirst({ where: eq(orders.id, id) });
 
   if (!order) notFound();
+
+  const aktivasi = await db.query.aktivasiCodes.findFirst({
+    where: eq(aktivasiCodes.orderId, order.orderId),
+  });
 
   const waLink = `https://wa.me/${order.whatsapp.replace(/^0/, "62")}?text=${encodeURIComponent(
     `Halo ${order.name}, kami dari Admin BlackRedRoblox mengenai pesanan Anda (${order.orderId}).`,
@@ -117,6 +122,9 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             currentStatus={order.status}
             initialNote={order.adminNote}
           />
+          <div className="mt-5">
+            <AktivasiCodeCard orderId={order.id} initialCode={aktivasi?.code ?? null} />
+          </div>
         </CardContent>
       </Card>
     </div>

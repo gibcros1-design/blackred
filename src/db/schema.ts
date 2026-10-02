@@ -34,6 +34,12 @@ export const config = pgTable("config", {
   value: text("value").notNull(),
 });
 
+export const aktivasiCodes = pgTable("aktivasi_codes", {
+  code: text("code").primaryKey(), // 8 char dari generateOrderCode
+  orderId: text("order_id").notNull().unique(), // order_id format publik (RBX-…), satu kode per order
+  createdAt: text("created_at").default(sql`(to_char(now() at time zone 'utc', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'))`).notNull(),
+});
+
 export type Order = typeof orders.$inferSelect;
 export type NewOrder = typeof orders.$inferInsert;
 export type Admin = typeof admins.$inferSelect;
