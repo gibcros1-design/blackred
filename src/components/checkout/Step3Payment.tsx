@@ -67,7 +67,7 @@ export function Step3Payment({ order, rekeningList, qrImageUrl, onNext }: Step3P
         <h4 className="text-sm font-medium">Rekening tujuan</h4>
         {qrImageUrl && (
           <figure className="mt-3 rounded-lg border border-border bg-stone-50 p-4 text-center">
-            <img src={qrImageUrl} alt="QRIS pembayaran" className="mx-auto max-h-64 w-auto rounded-md object-contain" />
+            <img src={qrImageUrl} alt="QRIS pembayaran" className="mx-auto max-h-[28rem] w-full max-w-md rounded-md object-contain" />
             <figcaption className="mt-3 text-sm text-muted-foreground">Scan QRIS untuk membayar.</figcaption>
           </figure>
         )}

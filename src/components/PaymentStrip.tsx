@@ -1,9 +1,18 @@
 import { RekeningItem } from "@/services/config";
 
-export function PaymentStrip({ rekeningList }: { rekeningList: RekeningItem[] }) {
-  if (!rekeningList.length) return null;
+export function PaymentStrip({
+  rekeningList,
+  qrImageUrl,
+}: {
+  rekeningList: RekeningItem[];
+  qrImageUrl?: string;
+}) {
+  if (!rekeningList.length && !qrImageUrl) return null;
 
-  const methods = Array.from(new Set(rekeningList.map((r) => r.bank)));
+  // QRIS dikonfigurasi terpisah (gambar di settings) — tetap tampil di strip.
+  const methods = qrImageUrl
+    ? Array.from(new Set([...rekeningList.map((r) => r.bank), "QRIS"]))
+    : Array.from(new Set(rekeningList.map((r) => r.bank)));
 
   return (
     <section className="border-y border-border bg-stone-50 py-5" aria-label="Metode pembayaran">

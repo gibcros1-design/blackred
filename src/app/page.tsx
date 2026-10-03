@@ -12,14 +12,16 @@ import { DEFAULT_PRICING, DEFAULT_REKENING, DEFAULT_ADMIN_WHATSAPP, DEFAULT_SERV
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [pricing, testimonials, adminWhatsapp, bannerUrl, rekeningList, serviceHours] = await Promise.all([
-    getConfigValue<PricingItem[]>("pricing", DEFAULT_PRICING),
-    getConfigValue<Testimonial[]>("testimonials", []),
-    getConfigValue<string>("admin_whatsapp", DEFAULT_ADMIN_WHATSAPP),
-    getConfigValue<string>("banner_image_url", ""),
-    getConfigValue<RekeningItem[]>("rekening", DEFAULT_REKENING),
-    getConfigValue<string>("service_hours", DEFAULT_SERVICE_HOURS),
-  ]);
+  const [pricing, testimonials, adminWhatsapp, bannerUrl, rekeningList, serviceHours, qrImageUrl] =
+    await Promise.all([
+      getConfigValue<PricingItem[]>("pricing", DEFAULT_PRICING),
+      getConfigValue<Testimonial[]>("testimonials", []),
+      getConfigValue<string>("admin_whatsapp", DEFAULT_ADMIN_WHATSAPP),
+      getConfigValue<string>("banner_image_url", ""),
+      getConfigValue<RekeningItem[]>("rekening", DEFAULT_REKENING),
+      getConfigValue<string>("service_hours", DEFAULT_SERVICE_HOURS),
+      getConfigValue<string>("qr_image_url", ""),
+    ]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -27,7 +29,7 @@ export default async function HomePage() {
       <main className="flex-1 pb-24 sm:pb-0">
         <HeroSection bannerUrl={bannerUrl} />
         <PricingGrid items={pricing} />
-        <PaymentStrip rekeningList={rekeningList} />
+        <PaymentStrip rekeningList={rekeningList} qrImageUrl={qrImageUrl} />
         <TrustSection whatsapp={adminWhatsapp} serviceHours={serviceHours} />
         <Testimonials items={testimonials} />
         <FaqSection />
