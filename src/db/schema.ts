@@ -5,12 +5,16 @@ export const orders = pgTable("orders", {
   id: text("id").primaryKey(), // UUID v4
   orderId: text("order_id").notNull().unique(), // RBX-YYYYMMDD-XXXXX
   code: text("code").notNull().unique(), // 8 char alphanumeric
-  robuxAmount: integer("robux_amount").notNull(),
+  game: text("game").notNull().default("roblox"),
+  itemName: text("item_name").notNull().default("Robux"),
+  gameUserId: text("game_user_id").notNull().default(""),
+  gameZoneId: text("game_zone_id").notNull().default(""),
+  robuxAmount: integer("robux_amount").notNull().default(0),
   price: integer("price").notNull(), // Base nominal price in IDR
   uniqueCode: integer("unique_code").notNull(), // 3 digit unique transfer code
   totalPrice: integer("total_price").notNull(), // price + uniqueCode
   name: text("name").notNull(),
-  robloxUsername: text("roblox_username").notNull(),
+  robloxUsername: text("roblox_username").notNull().default(""),
   whatsapp: text("whatsapp").notNull(),
   status: text("status", {
     enum: ["pending_payment", "waiting_verify", "approved", "processing", "completed", "rejected", "expired"]
