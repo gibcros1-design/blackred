@@ -9,6 +9,8 @@ import { FaqSection } from "@/components/FaqSection";
 import { getConfigValue, PricingItem, RekeningItem } from "@/services/config";
 import { DEFAULT_PRICING, DEFAULT_REKENING, DEFAULT_ADMIN_WHATSAPP, DEFAULT_SERVICE_HOURS } from "@/services/defaults";
 
+import { GameCatalogGrid } from "@/components/GameCatalogGrid";
+
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
@@ -28,6 +30,7 @@ export default async function HomePage() {
       <Navbar />
       <main className="flex-1 pb-24 sm:pb-0">
         <HeroSection bannerUrl={bannerUrl} />
+        <GameCatalogGrid />
         <PricingGrid items={pricing} />
         <PaymentStrip rekeningList={rekeningList} qrImageUrl={qrImageUrl} />
         <TrustSection whatsapp={adminWhatsapp} serviceHours={serviceHours} />
