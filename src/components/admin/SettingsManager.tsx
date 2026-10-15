@@ -3,15 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PricingItem, RekeningItem } from "@/services/config";
+import { UniversalGamePackage } from "@/services/defaults";
 import { saveSettingsAction } from "@/app/actions/settings";
-import { Plus, Trash2, Save, Loader2 } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Gamepad2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface Props {
   initialPricing: PricingItem[];
+  initialPricingMlbb?: UniversalGamePackage[];
+  initialPricingPubg?: UniversalGamePackage[];
+  initialPricingFreefire?: UniversalGamePackage[];
+  initialPricingFcmobile?: UniversalGamePackage[];
   initialRekening: RekeningItem[];
   initialBotToken: string;
   initialChatId: string;
@@ -24,6 +30,10 @@ interface Props {
 
 export function SettingsManager({
   initialPricing,
+  initialPricingMlbb = [],
+  initialPricingPubg = [],
+  initialPricingFreefire = [],
+  initialPricingFcmobile = [],
   initialRekening,
   initialBotToken,
   initialChatId,
@@ -34,7 +44,13 @@ export function SettingsManager({
   initialBannerImageUrl = "",
 }: Props) {
   const router = useRouter();
+  const [activeGameTab, setActiveGameTab] = useState<"roblox" | "mlbb" | "pubg" | "freefire" | "fcmobile">("roblox");
   const [pricing, setPricing] = useState<PricingItem[]>(initialPricing ?? []);
+  const [pricingMlbb, setPricingMlbb] = useState<UniversalGamePackage[]>(initialPricingMlbb ?? []);
+  const [pricingPubg, setPricingPubg] = useState<UniversalGamePackage[]>(initialPricingPubg ?? []);
+  const [pricingFreefire, setPricingFreefire] = useState<UniversalGamePackage[]>(initialPricingFreefire ?? []);
+  const [pricingFcmobile, setPricingFcmobile] = useState<UniversalGamePackage[]>(initialPricingFcmobile ?? []);
+
   const [rekening, setRekening] = useState<RekeningItem[]>(initialRekening ?? []);
   const [botToken, setBotToken] = useState(String(initialBotToken ?? ""));
   const [chatId, setChatId] = useState(String(initialChatId ?? ""));
@@ -133,6 +149,45 @@ export function SettingsManager({
     setRekening(updated);
   };
 
+  const handleAddGamePackage = (game: "mlbb" | "pubg" | "freefire" | "fcmobile") => {
+    const defaultNew: UniversalGamePackage = {
+      id: `${game}-${Date.now()}`,
+      name: game === "mlbb" ? "100 Diamonds" : game === "pubg" ? "100 UC" : game === "freefire" ? "100 Diamonds" : "100 FC Points",
+      amount: 100,
+      price: 20000,
+    };
+    if (game === "mlbb") setPricingMlbb([...pricingMlbb, defaultNew]);
+    if (game === "pubg") setPricingPubg([...pricingPubg, defaultNew]);
+    if (game === "freefire") setPricingFreefire([...pricingFreefire, defaultNew]);
+    if (game === "fcmobile") setPricingFcmobile([...pricingFcmobile, defaultNew]);
+    toast.info(`Paket baru ditambahkan untuk ${game.toUpperCase()}.`);
+  };
+
+  const handleRemoveGamePackage = (game: "mlbb" | "pubg" | "freefire" | "fcmobile", idx: number) => {
+    if (game === "mlbb") setPricingMlbb(pricingMlbb.filter((_, i) => i !== idx));
+    if (game === "pubg") setPricingPubg(pricingPubg.filter((_, i) => i !== idx));
+    if (game === "freefire") setPricingFreefire(pricingFreefire.filter((_, i) => i !== idx));
+    if (game === "fcmobile") setPricingFcmobile(pricingFcmobile.filter((_, i) => i !== idx));
+    toast.info("Paket dihapus.");
+  };
+
+  const handleUpdateGamePackage = (
+    game: "mlbb" | "pubg" | "freefire" | "fcmobile",
+    idx: number,
+    field: keyof UniversalGamePackage,
+    val: any
+  ) => {
+    const updateList = (list: UniversalGamePackage[]) => {
+      const next = [...list];
+      next[idx] = { ...next[idx], [field]: val };
+      return next;
+    };
+    if (game === "mlbb") setPricingMlbb(updateList(pricingMlbb));
+    if (game === "pubg") setPricingPubg(updateList(pricingPubg));
+    if (game === "freefire") setPricingFreefire(updateList(pricingFreefire));
+    if (game === "fcmobile") setPricingFcmobile(updateList(pricingFcmobile));
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -146,6 +201,10 @@ export function SettingsManager({
 
       const res = await saveSettingsAction({
         pricingJson: JSON.stringify(pricing),
+        pricingMlbbJson: JSON.stringify(pricingMlbb),
+        pricingPubgJson: JSON.stringify(pricingPubg),
+        pricingFreefireJson: JSON.stringify(pricingFreefire),
+        pricingFcmobileJson: JSON.stringify(pricingFcmobile),
         rekeningJson: JSON.stringify(rekening),
         telegramBotToken: String(botToken ?? "").trim(),
         telegramChatId: String(chatId ?? "").trim(),
@@ -171,55 +230,186 @@ export function SettingsManager({
     }
   };
 
+  const gameTabs = [
+    { id: "roblox", name: "Roblox", icon: "🎮", count: pricing.length },
+    { id: "mlbb", name: "Mobile Legends", icon: "⚔️", count: pricingMlbb.length },
+    { id: "pubg", name: "PUBG Mobile", icon: "🪖", count: pricingPubg.length },
+    { id: "freefire", name: "Free Fire", icon: "🔥", count: pricingFreefire.length },
+    { id: "fcmobile", name: "FC Mobile", icon: "⚽", count: pricingFcmobile.length },
+  ] as const;
+
+  const currentUniversalPackages =
+    activeGameTab === "mlbb" ? pricingMlbb :
+    activeGameTab === "pubg" ? pricingPubg :
+    activeGameTab === "freefire" ? pricingFreefire :
+    activeGameTab === "fcmobile" ? pricingFcmobile : [];
+
   return (
     <div className="space-y-6">
+      {/* Multi-Game Pricing Card */}
       <Card>
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
-          <div>
-            <CardTitle className="text-base">Harga nominal Robux</CardTitle>
-            <p className="text-sm text-muted-foreground">Atur jumlah Robux dan harga tiap paket.</p>
-          </div>
-          <Button type="button" variant="outline" size="sm" onClick={handleAddPricing} className="self-start sm:self-auto shrink-0">
-            <Plus className="h-4 w-4" /> Tambah paket
-          </Button>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {pricing.map((p, idx) => (
-            <div key={`${idx}-${p.robux}`} className="rounded-md border border-border bg-stone-50 p-3">
-              <div className="flex items-center justify-between gap-2">
-                <label htmlFor={`robux-${idx}`} className="text-sm font-semibold">Jumlah Robux</label>
-                <button
-                  type="button"
-                  aria-label={`Hapus paket ${p.robux} Robux`}
-                  onClick={() => handleRemovePricing(idx)}
-                  className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors duration-150 hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              <Input
-                id={`robux-${idx}`}
-                type="number"
-                min="1"
-                value={p.robux}
-                onChange={(e) => {
-                  const updated = [...pricing];
-                  updated[idx].robux = parseInt(e.target.value, 10) || 0;
-                  setPricing(updated);
-                }}
-                className="mt-2"
-              />
-              <label htmlFor={`price-${idx}`} className="mt-3 block text-sm font-medium">Harga (Rp)</label>
-              <Input
-                id={`price-${idx}`}
-                type="number"
-                min="1"
-                value={p.price}
-                onChange={(e) => handlePriceChange(idx, parseInt(e.target.value, 10) || 0)}
-                className="mt-1.5 font-mono"
-              />
+        <CardHeader className="pb-3 border-b border-border/60">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Gamepad2 className="h-5 w-5 text-primary" />
+                <span>Pengaturan Harga & Paket Game</span>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Kelola paket item, nominal, dan harga jual untuk masing-masing game.
+              </p>
             </div>
-          ))}
+            {activeGameTab === "roblox" ? (
+              <Button type="button" variant="outline" size="sm" onClick={handleAddPricing} className="self-start sm:self-auto shrink-0">
+                <Plus className="h-4 w-4" /> Tambah paket Robux
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleAddGamePackage(activeGameTab as any)}
+                className="self-start sm:self-auto shrink-0"
+              >
+                <Plus className="h-4 w-4" /> Tambah paket {activeGameTab.toUpperCase()}
+              </Button>
+            )}
+          </div>
+
+          {/* Game Tab Nav */}
+          <div className="flex flex-wrap gap-1.5 pt-3">
+            {gameTabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveGameTab(tab.id)}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer border",
+                  activeGameTab === tab.id
+                    ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                    : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.name}</span>
+                <span className={cn(
+                  "ml-0.5 rounded-full px-1.5 py-0.2 text-[10px]",
+                  activeGameTab === tab.id ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground"
+                )}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </CardHeader>
+
+        <CardContent className="pt-5">
+          {/* Roblox Tab Content */}
+          {activeGameTab === "roblox" && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {pricing.map((p, idx) => (
+                <div key={`${idx}-${p.robux}`} className="rounded-md border border-border bg-stone-50 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <label htmlFor={`robux-${idx}`} className="text-sm font-semibold">Jumlah Robux</label>
+                    <button
+                      type="button"
+                      aria-label={`Hapus paket ${p.robux} Robux`}
+                      onClick={() => handleRemovePricing(idx)}
+                      className="flex h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-destructive cursor-pointer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <Input
+                    id={`robux-${idx}`}
+                    type="number"
+                    min="1"
+                    value={p.robux}
+                    onChange={(e) => {
+                      const updated = [...pricing];
+                      updated[idx].robux = parseInt(e.target.value, 10) || 0;
+                      setPricing(updated);
+                    }}
+                    className="mt-2"
+                  />
+                  <label htmlFor={`price-${idx}`} className="mt-3 block text-sm font-medium">Harga (Rp)</label>
+                  <Input
+                    id={`price-${idx}`}
+                    type="number"
+                    min="1"
+                    value={p.price}
+                    onChange={(e) => handlePriceChange(idx, parseInt(e.target.value, 10) || 0)}
+                    className="mt-1.5 font-mono"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Universal Games Tab Content (MLBB, PUBG, FF, FC Mobile) */}
+          {activeGameTab !== "roblox" && (
+            <div>
+              {currentUniversalPackages.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground border border-dashed rounded-lg">
+                  Belum ada paket untuk game ini. Klik tombol tambah di atas.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {currentUniversalPackages.map((pkg, idx) => (
+                    <div key={`${pkg.id || idx}`} className="rounded-md border border-border bg-stone-50 p-3.5 space-y-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                          #{idx + 1} {activeGameTab.toUpperCase()}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label={`Hapus paket ${pkg.name}`}
+                          onClick={() => handleRemoveGamePackage(activeGameTab as any, idx)}
+                          className="flex h-7 w-7 items-center justify-center text-muted-foreground hover:text-destructive cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-semibold block">Nama Tampilan Paket</label>
+                        <Input
+                          type="text"
+                          value={pkg.name}
+                          onChange={(e) => handleUpdateGamePackage(activeGameTab as any, idx, "name", e.target.value)}
+                          placeholder="Contoh: 86 Diamonds / WDP"
+                          className="mt-1 text-sm"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs font-medium block">Nominal Angka</label>
+                          <Input
+                            type="number"
+                            min="1"
+                            value={pkg.amount}
+                            onChange={(e) => handleUpdateGamePackage(activeGameTab as any, idx, "amount", parseInt(e.target.value, 10) || 0)}
+                            className="mt-1 text-sm font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium block">Harga (Rp)</label>
+                          <Input
+                            type="number"
+                            min="1"
+                            value={pkg.price}
+                            onChange={(e) => handleUpdateGamePackage(activeGameTab as any, idx, "price", parseInt(e.target.value, 10) || 0)}
+                            className="mt-1 text-sm font-mono"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
