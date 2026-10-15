@@ -7,18 +7,29 @@ interface Step5Props {
   order: {
     orderId: string;
     code: string;
-    robuxAmount: number;
+    game?: string;
+    itemName?: string;
+    gameUserId?: string;
+    gameZoneId?: string;
+    robuxAmount?: number;
     totalPrice: number;
-    robloxUsername: string;
+    robloxUsername?: string;
   };
 }
 
 export function Step5Success({ order }: Step5Props) {
+  const accountText = order.gameZoneId
+    ? `${order.gameUserId || order.robloxUsername} (Zone: ${order.gameZoneId})`
+    : (order.gameUserId || order.robloxUsername || "-");
+
+  const itemText = order.itemName || (order.robuxAmount ? `${order.robuxAmount.toLocaleString("id-ID")} Robux` : "-");
+
   const rows = [
     { label: "Order ID", value: order.orderId, mono: true },
     { label: "Kode cek status", value: order.code, mono: true, accent: true },
-    { label: "Username Roblox", value: order.robloxUsername },
-    { label: "Jumlah Robux", value: `${order.robuxAmount.toLocaleString("id-ID")} R$` },
+    { label: "Game", value: (order.game ? order.game.toUpperCase() : "ROBLOX") },
+    { label: "Akun / Player ID", value: accountText },
+    { label: "Paket Item", value: itemText },
     { label: "Total dibayar", value: formatRupiah(order.totalPrice) },
   ];
 
