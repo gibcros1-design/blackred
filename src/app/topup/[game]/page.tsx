@@ -35,11 +35,30 @@ export default async function TopupGamePage({ params, searchParams }: PageProps)
   }
 
   const defaultPackages = getDefaultPackagesForGame(gameConfig.id);
-  const [packages, rekeningList, qrImageUrl] = await Promise.all([
-    getConfigValue<UniversalGamePackage[]>(gameConfig.configKey, defaultPackages),
+  const [rawPackages, rekeningList, qrImageUrl] = await Promise.all([
+    getConfigValue<any[]>(gameConfig.configKey, defaultPackages),
     getConfigValue<RekeningItem[]>("rekening", DEFAULT_REKENING),
     getConfigValue<string>("qr_image_url", ""),
   ]);
+
+  const packages: UniversalGamePackage[] = (rawPackages && rawPackages.length > 0 ? rawPackages : defaultPackages).map(
+    (p: any, idx: number) => {
+      const amount = Number(p.amount ?? p.robux ?? 0);
+      const isRoblox = gameConfig.id === "roblox";
+      const defaultId = isRoblox ? `rbx-${amount}` : `${gameConfig.id}-${amount || idx}`;
+      const defaultName = isRoblox
+        ? `${amount.toLocaleString("id-ID")} Robux`
+        : `${amount.toLocaleString("id-ID")} ${gameConfig.currencyName}`;
+
+      return {
+        id: String(p.id || defaultId),
+        name: String(p.name || defaultName),
+        amount,
+        price: Number(p.price) || 0,
+        popular: Boolean(p.popular || (isRoblox && amount === 6500)),
+      };
+    }
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -48,11 +67,7 @@ export default async function TopupGamePage({ params, searchParams }: PageProps)
       <main className="flex-1 py-10 sm:py-14">
         <div className="mx-auto max-w-5xl px-4">
           {/* Header Banner */}
-          <div className="mb-8 text-center sm:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-stone-100 px-3.5 py-1 text-xs font-semibold text-foreground mb-3 shadow-2xs">
-              <img src={gameConfig.logoUrl} alt={gameConfig.name} className="h-4 w-auto object-contain" />
-              <span>{gameConfig.publisher}</span>
-            </div>
+          <div className="mb-6 sm:mb-8 text-center sm:text-left">
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground font-heading">
               Top Up {gameConfig.name}
             </h1>

@@ -67,19 +67,19 @@ export function Step4UploadProof({ orderId, proofToken, onSuccess, onSubmitProof
 
   return (
     <div>
-      <h3 className="text-lg font-semibold">Unggah bukti transfer</h3>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <h3 className="text-lg font-semibold text-white">Unggah bukti transfer</h3>
+      <p className="mt-1 text-sm text-zinc-400">
         Kirimkan screenshot struk transfer bank atau e-wallet Anda.
       </p>
 
       {error && (
-        <p className="mt-4 flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
-          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <p className="mt-4 flex items-center gap-2 rounded-md border border-red-800/50 bg-red-950/40 px-3 py-2 text-sm text-red-300" role="alert">
+          <AlertCircle className="h-4 w-4 shrink-0 text-red-500" aria-hidden="true" />
           {error}
         </p>
       )}
 
-      <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-input bg-stone-50 p-8 text-center transition-colors duration-150 hover:border-foreground/40">
+      <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-900/80 p-8 text-center transition-colors duration-150 hover:border-red-600 hover:bg-zinc-900">
         <input
           type="file"
           accept="image/jpeg,image/png,image/webp"
@@ -91,19 +91,19 @@ export function Step4UploadProof({ orderId, proofToken, onSuccess, onSubmitProof
             <img
               src={preview}
               alt="Preview bukti transfer"
-              className="max-h-56 rounded-md border border-border object-contain"
+              className="max-h-56 rounded-md border border-zinc-700 object-contain"
             />
-            <span className="mt-3 text-sm text-muted-foreground">
+            <span className="mt-3 text-sm text-zinc-400">
               Klik untuk mengganti gambar
             </span>
           </>
         ) : (
           <>
-            <UploadCloud className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-            <span className="mt-3 text-sm font-medium">
+            <UploadCloud className="h-8 w-8 text-red-500" aria-hidden="true" />
+            <span className="mt-3 text-sm font-medium text-white">
               Klik untuk memilih screenshot bukti transfer
             </span>
-            <span className="mt-1 text-xs text-muted-foreground">
+            <span className="mt-1 text-xs text-zinc-400">
               JPG, PNG, atau WEBP, maksimal 5MB
             </span>
           </>
@@ -111,7 +111,12 @@ export function Step4UploadProof({ orderId, proofToken, onSuccess, onSubmitProof
       </label>
 
       <div className="mt-6 flex justify-end">
-        <Button type="button" disabled={!file || uploading} onClick={handleUploadAndSubmit}>
+        <Button
+          type="button"
+          disabled={!file || uploading}
+          onClick={handleUploadAndSubmit}
+          className="bg-red-600 hover:bg-red-700 text-white font-semibold shadow-md shadow-red-950/50 disabled:opacity-50"
+        >
           {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
           {uploading ? "Mengirim bukti" : "Konfirmasi pembayaran"}
         </Button>
