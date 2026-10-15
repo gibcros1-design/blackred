@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 
 export function GameCatalogGrid() {
   return (
-    <section className="relative py-12 sm:py-16 bg-muted/20 border-b border-border/70" aria-label="Katalog Game">
+    <section id="katalog" className="relative py-12 sm:py-16 bg-muted/20 border-b border-border/70 scroll-mt-16" aria-label="Katalog Game">
       <div className="mx-auto max-w-6xl px-4">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 sm:mb-10">

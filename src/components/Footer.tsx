@@ -2,8 +2,9 @@ import Link from "next/link";
 
 const links = [
   { href: "/", label: "Beranda" },
-  { href: "/beli", label: "Pesan Robux" },
-  { href: "/cek-order", label: "Cek status order" },
+  { href: "/#katalog", label: "Katalog Game" },
+  { href: "/beli", label: "Top Up Robux" },
+  { href: "/cek-order", label: "Cek Status Order" },
   { href: "/admin/login", label: "Admin" },
 ];
 
@@ -17,7 +18,7 @@ export function Footer() {
               Black<span className="text-destructive">Red</span>Roblox
             </span>
             <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
-              Top-up Roblox via Group Payout dan Game Pass.
+              Layanan top up game cepat & terpercaya: Roblox, MLBB, Free Fire, PUBG Mobile, dan FC Mobile.
             </p>
           </div>
           <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm">

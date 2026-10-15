@@ -30,7 +30,7 @@ export function PricingGrid({ items }: PricingGridProps) {
     return (
       <Link
         key={item.robux}
-        href={`/beli?robux=${item.robux}`}
+        href={`/topup/roblox?package=rbx-${item.robux}`}
         aria-label={`Pilih paket ${item.robux} Robux seharga ${formatRupiah(item.price)}`}
         className={`group relative flex min-h-[104px] flex-col justify-between overflow-hidden rounded-lg border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
           isPopular ? "border-destructive bg-destructive/5" : "border-border bg-card hover:border-foreground/40"
@@ -106,7 +106,7 @@ export function PricingGrid({ items }: PricingGridProps) {
           <p className="text-sm text-muted-foreground">
             Klik paket untuk lanjut ke pemesanan. Harga tampil sebelum Anda membayar.
           </p>
-          <Link href="/beli" className={`${buttonVariants({ variant: "outline" })} mt-3 w-full sm:mt-0 sm:w-auto`}>
+          <Link href="/topup/roblox" className={`${buttonVariants({ variant: "outline" })} mt-3 w-full sm:mt-0 sm:w-auto`}>
             Lihat semua di halaman pesan <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

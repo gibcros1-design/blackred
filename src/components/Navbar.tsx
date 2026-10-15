@@ -16,13 +16,16 @@ export function Navbar() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          <Link href="/#katalog" className="hidden sm:inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1">
+            Katalog Game
+          </Link>
           <Link href="/cek-order" className={`${buttonVariants({ variant: "outline", size: "sm" })} flex-1 sm:flex-none`}>
             <Search className="h-4 w-4 shrink-0" />
             <span className="truncate">Lacak Order</span>
           </Link>
           <Link href="/beli" className={`${buttonVariants({ size: "sm" })} flex-1 sm:flex-none`}>
             <ShoppingBag className="h-4 w-4 shrink-0" />
-            <span className="truncate">Beli Sekarang</span>
+            <span className="truncate">Top Up</span>
           </Link>
         </nav>
       </div>
