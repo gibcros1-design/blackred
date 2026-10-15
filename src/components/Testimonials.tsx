@@ -13,10 +13,12 @@ export interface Testimonial {
 
 export function Testimonials({ items }: { items: Testimonial[] }) {
   const [index, setIndex] = useState(0);
-  if (!items.length) return null;
+  const validItems = Array.isArray(items) ? items.filter((it) => it && (it.quote?.trim() || it.name?.trim())) : [];
+  if (!validItems.length) return null;
 
-  const item = items[index];
-  const move = (step: number) => setIndex((current) => (current + step + items.length) % items.length);
+  const safeIndex = Math.min(index, validItems.length - 1);
+  const item = validItems[safeIndex];
+  const move = (step: number) => setIndex((current) => (current + step + validItems.length) % validItems.length);
 
   return (
     <section className="border-t border-border py-14 sm:py-16" aria-label="Ulasan pelanggan">
@@ -26,7 +28,7 @@ export function Testimonials({ items }: { items: Testimonial[] }) {
             <p className="text-sm font-medium text-muted-foreground">Dari pelanggan</p>
             <h2 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">Pengalaman setelah transaksi</h2>
           </div>
-          {items.length > 1 && (
+          {validItems.length > 1 && (
             <div className="flex gap-2">
               <Button type="button" variant="outline" size="icon" aria-label="Ulasan sebelumnya" onClick={() => move(-1)}>
                 <ChevronLeft className="h-4 w-4" />
@@ -47,8 +49,8 @@ export function Testimonials({ items }: { items: Testimonial[] }) {
               <span className="font-semibold">{item.name}</span>
               {item.robux ? <span className="text-muted-foreground">· {item.robux.toLocaleString("id-ID")} Robux</span> : null}
             </div>
-            {items.length > 1 && (
-              <p className="mt-4 text-xs text-muted-foreground" aria-live="polite">{index + 1} dari {items.length}</p>
+            {validItems.length > 1 && (
+              <p className="mt-4 text-xs text-muted-foreground" aria-live="polite">{safeIndex + 1} dari {validItems.length}</p>
             )}
           </CardContent>
         </Card>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PricingItem, RekeningItem } from "@/services/config";
 import { saveSettingsAction } from "@/app/actions/settings";
 import { Plus, Trash2, Save, Loader2 } from "lucide-react";
@@ -32,15 +33,16 @@ export function SettingsManager({
   initialTestimonials = [],
   initialBannerImageUrl = "",
 }: Props) {
-  const [pricing, setPricing] = useState<PricingItem[]>(initialPricing);
-  const [rekening, setRekening] = useState<RekeningItem[]>(initialRekening);
-  const [botToken, setBotToken] = useState(initialBotToken);
-  const [chatId, setChatId] = useState(initialChatId);
-  const [qrImageUrl, setQrImageUrl] = useState(initialQrImageUrl);
-  const [adminWhatsapp, setAdminWhatsapp] = useState(initialAdminWhatsapp);
-  const [serviceHours, setServiceHours] = useState(initialServiceHours);
-  const [testimonials, setTestimonials] = useState(initialTestimonials);
-  const [bannerImageUrl, setBannerImageUrl] = useState(initialBannerImageUrl);
+  const router = useRouter();
+  const [pricing, setPricing] = useState<PricingItem[]>(initialPricing ?? []);
+  const [rekening, setRekening] = useState<RekeningItem[]>(initialRekening ?? []);
+  const [botToken, setBotToken] = useState(String(initialBotToken ?? ""));
+  const [chatId, setChatId] = useState(String(initialChatId ?? ""));
+  const [qrImageUrl, setQrImageUrl] = useState(String(initialQrImageUrl ?? ""));
+  const [adminWhatsapp, setAdminWhatsapp] = useState(String(initialAdminWhatsapp ?? ""));
+  const [serviceHours, setServiceHours] = useState(String(initialServiceHours ?? ""));
+  const [testimonials, setTestimonials] = useState(initialTestimonials ?? []);
+  const [bannerImageUrl, setBannerImageUrl] = useState(String(initialBannerImageUrl ?? ""));
   const [saving, setSaving] = useState(false);
   const [uploadingQr, setUploadingQr] = useState(false);
   const [qrError, setQrError] = useState("");
@@ -134,20 +136,36 @@ export function SettingsManager({
   const handleSave = async () => {
     setSaving(true);
     try {
-      await saveSettingsAction({
+      const cleanededTestimonials = testimonials
+        .filter((t) => (t.name || "").trim() || (t.quote || "").trim())
+        .map((t) => ({
+          name: (t.name || "").trim(),
+          quote: (t.quote || "").trim(),
+          robux: t.robux && Number(t.robux) > 0 ? Number(t.robux) : undefined,
+        }));
+
+      const res = await saveSettingsAction({
         pricingJson: JSON.stringify(pricing),
         rekeningJson: JSON.stringify(rekening),
-        telegramBotToken: botToken,
-        telegramChatId: chatId,
-        qrImageUrl,
-        adminWhatsapp,
-        serviceHours,
-        testimonialsJson: JSON.stringify(testimonials),
-        bannerImageUrl,
+        telegramBotToken: String(botToken ?? "").trim(),
+        telegramChatId: String(chatId ?? "").trim(),
+        qrImageUrl: String(qrImageUrl ?? "").trim(),
+        adminWhatsapp: String(adminWhatsapp ?? "").trim(),
+        serviceHours: String(serviceHours ?? "").trim(),
+        testimonialsJson: JSON.stringify(cleanededTestimonials),
+        bannerImageUrl: String(bannerImageUrl ?? "").trim(),
       });
+
+      if (!res.success) {
+        toast.error(res.error || "Gagal menyimpan pengaturan.");
+        return;
+      }
+
+      setTestimonials(cleanededTestimonials);
       toast.success("Pengaturan tersimpan.");
-    } catch {
-      toast.error("Gagal menyimpan pengaturan.");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err?.message || "Gagal menyimpan pengaturan.");
     } finally {
       setSaving(false);
     }

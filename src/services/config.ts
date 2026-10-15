@@ -18,12 +18,32 @@ export async function getConfigValue<T>(key: string, defaultValue: T): Promise<T
     const row = await db.query.config.findFirst({
       where: eq(config.key, key),
     });
-    if (!row || !row.value) return defaultValue;
+    if (!row || row.value === null || row.value === undefined || row.value === "") {
+      return defaultValue;
+    }
+
+    if (typeof defaultValue === "string") {
+      try {
+        const parsed = JSON.parse(row.value);
+        return (typeof parsed === "string" ? parsed : String(row.value)) as unknown as T;
+      } catch {
+        return String(row.value) as unknown as T;
+      }
+    }
+
+    if (Array.isArray(defaultValue)) {
+      try {
+        const parsed = JSON.parse(row.value);
+        return (Array.isArray(parsed) ? parsed : defaultValue) as unknown as T;
+      } catch {
+        return defaultValue;
+      }
+    }
+
     try {
       return JSON.parse(row.value) as T;
     } catch {
-      // Nilai string tersimpan mentah (tanpa kutip JSON) — amankan sebagai string.
-      return typeof defaultValue === "string" ? (row.value as unknown as T) : defaultValue;
+      return defaultValue;
     }
   } catch {
     return defaultValue;
