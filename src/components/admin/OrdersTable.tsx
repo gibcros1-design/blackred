@@ -55,7 +55,10 @@ export function OrdersTable({ orders }: OrdersTableProps) {
       o.orderId.toLowerCase().includes(q) ||
       o.code.toLowerCase().includes(q) ||
       o.name.toLowerCase().includes(q) ||
-      o.robloxUsername.toLowerCase().includes(q);
+      (o.robloxUsername && o.robloxUsername.toLowerCase().includes(q)) ||
+      (o.gameUserId && o.gameUserId.toLowerCase().includes(q)) ||
+      (o.itemName && o.itemName.toLowerCase().includes(q)) ||
+      (o.game && o.game.toLowerCase().includes(q));
     return matchesFilter && matchesSearch;
   });
 
@@ -141,17 +144,23 @@ export function OrdersTable({ orders }: OrdersTableProps) {
 
                 <div className="space-y-0.5 min-w-0">
                   <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                    <Gamepad2 className="h-3 w-3" /> Roblox User
+                    <Gamepad2 className="h-3 w-3" /> Akun / ID
                   </span>
-                  <div className="font-medium text-foreground truncate">{o.robloxUsername}</div>
+                  <div className="font-medium text-foreground truncate">
+                    {o.gameUserId || o.robloxUsername || "-"}
+                    {o.gameZoneId ? ` (${o.gameZoneId})` : ""}
+                  </div>
+                  <div className="text-[10px] uppercase font-semibold text-muted-foreground">
+                    {o.game || "roblox"}
+                  </div>
                 </div>
 
                 <div className="space-y-0.5 border-t border-border/40 pt-2 min-w-0">
                   <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                    <Coins className="h-3 w-3" /> Nominal Robux
+                    <Coins className="h-3 w-3" /> Item / Paket
                   </span>
-                  <div className="font-bold text-foreground">
-                    {o.robuxAmount.toLocaleString("id-ID")} R$
+                  <div className="font-bold text-foreground truncate">
+                    {o.itemName || `${(o.robuxAmount ?? 0).toLocaleString("id-ID")} R$`}
                   </div>
                 </div>
 
@@ -190,8 +199,8 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             <tr>
               <th className="p-3.5 font-medium">Order ID</th>
               <th className="p-3.5 font-medium">Pelanggan</th>
-              <th className="p-3.5 font-medium">Roblox username</th>
-              <th className="p-3.5 font-medium">Robux</th>
+              <th className="p-3.5 font-medium">Game & Akun</th>
+              <th className="p-3.5 font-medium">Item / Paket</th>
               <th className="p-3.5 font-medium">Total bayar</th>
               <th className="p-3.5 font-medium">Status</th>
               <th className="p-3.5 font-medium">Tanggal</th>
@@ -216,8 +225,18 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                     <div className="font-medium">{o.name}</div>
                     <div className="text-xs text-muted-foreground">{o.whatsapp}</div>
                   </td>
-                  <td className="p-3.5 font-medium">{o.robloxUsername}</td>
-                  <td className="p-3.5">{o.robuxAmount.toLocaleString("id-ID")} R$</td>
+                  <td className="p-3.5">
+                    <div className="font-medium">
+                      {o.gameUserId || o.robloxUsername || "-"}
+                      {o.gameZoneId ? ` (${o.gameZoneId})` : ""}
+                    </div>
+                    <span className="inline-block rounded bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-stone-600">
+                      {o.game || "roblox"}
+                    </span>
+                  </td>
+                  <td className="p-3.5 font-medium">
+                    {o.itemName || `${(o.robuxAmount ?? 0).toLocaleString("id-ID")} R$`}
+                  </td>
                   <td className="p-3.5 font-medium">{formatRupiah(o.totalPrice)}</td>
                   <td className="p-3.5">
                     <span

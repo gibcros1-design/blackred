@@ -129,11 +129,13 @@ export function OrderTracker({ initialCode, initialOrder, adminWhatsapp = "" }: 
           <dl className="mt-4 divide-y divide-border rounded-lg border border-border px-4 text-sm">
             {[
               ["Order ID", order.orderId],
-              ["Jumlah Robux", `${order.robuxAmount.toLocaleString("id-ID")} R$`],
+              ["Game", (order.game ? order.game.toUpperCase() : "ROBLOX")],
+              ["Paket Item", order.itemName || (order.robuxAmount ? `${order.robuxAmount.toLocaleString("id-ID")} Robux` : "-")],
+              ...(order.gameUserId ? [["ID Akun", order.gameZoneId ? `${order.gameUserId} (Zone: ${order.gameZoneId})` : order.gameUserId]] : []),
               ["Total harga", formatRupiah(order.totalPrice)],
               ["Waktu order", formatDate(order.createdAt)],
             ].map(([label, value]) => (
-              <div key={label} className="flex justify-between gap-4 py-2.5">
+              <div key={label as string} className="flex justify-between gap-4 py-2.5">
                 <dt className="text-muted-foreground">{label}</dt>
                 <dd className="text-right font-medium">{value}</dd>
               </div>

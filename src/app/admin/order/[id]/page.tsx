@@ -33,12 +33,19 @@ export default async function AdminOrderDetailPage({ params }: Props) {
     `Halo ${order.name}, kami dari Admin BlackRedRoblox mengenai pesanan Anda (${order.orderId}).`,
   )}`;
 
+  const accountText = order.gameZoneId
+    ? `${order.gameUserId || order.robloxUsername} (Server/Zone: ${order.gameZoneId})`
+    : (order.gameUserId || order.robloxUsername || "-");
+
+  const itemText = order.itemName || (order.robuxAmount ? `${order.robuxAmount.toLocaleString("id-ID")} Robux` : "-");
+
   const details = [
     ["Kode cek publik", order.code],
+    ["Game", (order.game ? order.game.toUpperCase() : "ROBLOX")],
+    ["Paket Item", itemText],
+    ["ID Akun / Player ID", accountText],
     ["Nama pelanggan", order.name],
-    ["Username Roblox", order.robloxUsername],
     ["Nomor WhatsApp", order.whatsapp],
-    ["Jumlah Robux", `${order.robuxAmount.toLocaleString("id-ID")} R$`],
     ["Kode unik transfer", `+${order.uniqueCode}`],
     ["Total pembayaran", formatRupiah(order.totalPrice)],
     ["Dibuat pada", formatDate(order.createdAt)],
