@@ -9,37 +9,84 @@ import { DEFAULT_PRICING } from "@/services/defaults";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
+import { getGameConfig } from "@/lib/games";
+import { getDefaultPackagesForGame, UniversalGamePackage } from "@/services/defaults";
+
 export async function createOrderAction(formData: {
-  robuxAmount: number;
-  price: number;
+  game?: string;
+  itemName?: string;
+  packageId?: string;
+  robuxAmount?: number;
+  price?: number;
   name: string;
-  robloxUsername: string;
+  robloxUsername?: string;
+  gameUserId?: string;
+  gameZoneId?: string;
   whatsapp: string;
 }) {
   try {
-    if (typeof formData.robuxAmount !== "number" || !Number.isFinite(formData.robuxAmount)) {
-      return { success: false as const, error: "Nominal tidak valid." };
-    }
+    const game = (formData.game || "roblox").toLowerCase();
+    const gameConfig = getGameConfig(game);
 
-    // Harga selalu dari server — input klien tidak pernah dipercaya.
-    const pricing = await getConfigValue<PricingItem[]>("pricing", DEFAULT_PRICING);
-    const match = pricing.find((p) => p.robux === formData.robuxAmount);
-    if (!match) {
-      return { success: false as const, error: "Nominal tidak tersedia." };
+    let price = 0;
+    let itemName = formData.itemName || "";
+    let robuxAmount = 0;
+
+    if (game === "roblox") {
+      const amount = formData.robuxAmount;
+      if (typeof amount !== "number" || !Number.isFinite(amount)) {
+        return { success: false as const, error: "Nominal Robux tidak valid." };
+      }
+      const pricing = await getConfigValue<PricingItem[]>("pricing", DEFAULT_PRICING);
+      const match = pricing.find((p) => p.robux === amount);
+      if (!match) {
+        return { success: false as const, error: "Nominal paket tidak tersedia." };
+      }
+      price = match.price;
+      robuxAmount = match.robux;
+      itemName = `${match.robux.toLocaleString("id-ID")} Robux`;
+    } else {
+      if (!gameConfig) {
+        return { success: false as const, error: "Game tidak dikenali." };
+      }
+      const defaultPackages = getDefaultPackagesForGame(game);
+      const packages = await getConfigValue<UniversalGamePackage[]>(gameConfig.configKey, defaultPackages);
+
+      // Cari paket berdasarkan packageId atau itemName atau amount
+      const match = packages.find(
+        (p) =>
+          (formData.packageId && p.id === formData.packageId) ||
+          (formData.itemName && p.name.toLowerCase() === formData.itemName.toLowerCase()) ||
+          (formData.robuxAmount && p.amount === formData.robuxAmount)
+      );
+
+      if (!match) {
+        return { success: false as const, error: "Paket item tidak ditemukan atau tidak aktif." };
+      }
+
+      price = match.price;
+      itemName = match.name;
+      robuxAmount = match.amount || 0;
     }
-    const price = match.price;
 
     const name = (formData.name ?? "").trim().slice(0, 80);
-    const robloxUsername = (formData.robloxUsername ?? "").trim().slice(0, 40);
+    const gameUserId = (formData.gameUserId || formData.robloxUsername || "").trim().slice(0, 60);
+    const gameZoneId = (formData.gameZoneId ?? "").trim().slice(0, 20);
+    const robloxUsername = game === "roblox" ? gameUserId : "";
     const whatsapp = (formData.whatsapp ?? "").trim().replace(/[^\d+]/g, "").slice(0, 20);
 
-    if (!name || !robloxUsername || !whatsapp) {
-      return { success: false as const, error: "Data pemesan tidak lengkap." };
+    if (!name || !gameUserId || !whatsapp) {
+      return { success: false as const, error: "Data pemesan dan ID akun wajib diisi." };
+    }
+
+    if (game === "mlbb" && !gameZoneId) {
+      return { success: false as const, error: "Zone ID / Server MLBB wajib diisi." };
     }
 
     const uniqueCode = generateUniqueCode();
     const totalPrice = price + uniqueCode;
-    const orderId = generateOrderId();
+    const prefix = gameConfig?.orderPrefix || "RBX";
+    const orderId = generateOrderId(prefix);
     const code = generateOrderCode(8);
     const id = uuidv4();
     const proofToken = randomToken();
@@ -48,12 +95,16 @@ export async function createOrderAction(formData: {
       id,
       orderId,
       code,
-      robuxAmount: formData.robuxAmount,
+      game,
+      itemName,
+      gameUserId,
+      gameZoneId,
+      robuxAmount,
       price,
       uniqueCode,
       totalPrice,
       name,
-      robloxUsername,
+      robloxUsername: robloxUsername || gameUserId,
       whatsapp,
       proofToken,
       status: "pending_payment" as const,
@@ -61,7 +112,16 @@ export async function createOrderAction(formData: {
 
     await db.insert(orders).values(newOrder);
 
-    // Token tidak boleh ikut ke klien — cukup di session wizard.
+    // Kirim notifikasi Telegram awal pesanan baru ke admin
+    sendTelegramOrderNotification({
+      ...newOrder,
+      paymentProof: null,
+      adminNote: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }).catch((err) => console.error("Gagal kirim notif telegram order baru:", err));
+
+    // Token tidak boleh ikut ke klien — cukup di session wizard
     const { proofToken: _hidden, ...order } = newOrder;
     return { success: true as const, order, proofToken };
   } catch (error) {

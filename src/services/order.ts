@@ -10,13 +10,13 @@ export function generateOrderCode(length: number = 6): string {
   return result;
 }
 
-export function generateOrderId(): string {
+export function generateOrderId(prefix: string = "RBX"): string {
   const now = new Date();
   const yyyy = now.getFullYear();
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
   const suffix = generateOrderCode(5);
-  return `RBX-${yyyy}${mm}${dd}-${suffix}`;
+  return `${prefix.toUpperCase()}-${yyyy}${mm}${dd}-${suffix}`;
 }
 
 export function generateUniqueCode(): number {
