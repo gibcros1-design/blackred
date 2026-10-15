@@ -24,6 +24,7 @@ export interface GameConfig {
   currencyName: string;
   currencyUnit: string;
   icon: string;
+  logoUrl: string;
   bannerGradient: string;
   tagline: string;
   idGuide: string;
@@ -42,6 +43,7 @@ export const GAMES: Record<string, GameConfig> = {
     currencyName: "Robux",
     currencyUnit: "R$",
     icon: "🎮",
+    logoUrl: "/games/roblox.png",
     bannerGradient: "from-red-600/20 via-zinc-900 to-black",
     tagline: "Top up Robux instan via Gamepass & Group Payout",
     idGuide: "Masukkan Username akun Roblox Anda tanpa spasi.",
@@ -66,6 +68,7 @@ export const GAMES: Record<string, GameConfig> = {
     currencyName: "Diamonds",
     currencyUnit: "💎",
     icon: "⚔️",
+    logoUrl: "/games/mlbb.png",
     bannerGradient: "from-amber-600/20 via-zinc-900 to-black",
     tagline: "Top up Diamond & Weekly Diamond Pass resmi & legal",
     idGuide: "User ID (angka 8-10 digit) dan Zone ID (angka dalam kurung 4-5 digit) ada di profil game.",
@@ -99,6 +102,7 @@ export const GAMES: Record<string, GameConfig> = {
     currencyName: "Unknown Cash (UC)",
     currencyUnit: "UC",
     icon: "🪖",
+    logoUrl: "/games/pubg.png",
     bannerGradient: "from-yellow-600/20 via-zinc-900 to-black",
     tagline: "Isi UC PUBG Mobile langsung ke Character ID Anda",
     idGuide: "Buka profil PUBG Mobile Anda, Character ID (UID) tertera di bawah avatar profil.",
@@ -124,6 +128,7 @@ export const GAMES: Record<string, GameConfig> = {
     currencyName: "Diamonds",
     currencyUnit: "💎",
     icon: "🔥",
+    logoUrl: "/games/freefire.png",
     bannerGradient: "from-orange-600/20 via-zinc-900 to-black",
     tagline: "Top up FF Diamond & Membership proses kilat",
     idGuide: "Lihat Player ID di profil akun Free Fire Anda (tertera di bawah nickname).",
@@ -149,6 +154,7 @@ export const GAMES: Record<string, GameConfig> = {
     currencyName: "FC Points / Silver",
     currencyUnit: "⚽",
     icon: "⚽",
+    logoUrl: "/games/fcmobile.png",
     bannerGradient: "from-emerald-600/20 via-zinc-900 to-black",
     tagline: "Beli FC Points resmi untuk pack pemain & event terbaru",
     idGuide: "UID Akun dapat dilihat pada menu Settings > Customer Service > UID Akun.",

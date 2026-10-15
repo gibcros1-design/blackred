@@ -49,8 +49,8 @@ export default async function TopupGamePage({ params, searchParams }: PageProps)
         <div className="mx-auto max-w-5xl px-4">
           {/* Header Banner */}
           <div className="mb-8 text-center sm:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary mb-3">
-              <span>{gameConfig.icon}</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-stone-100 px-3.5 py-1 text-xs font-semibold text-foreground mb-3 shadow-2xs">
+              <img src={gameConfig.logoUrl} alt={gameConfig.name} className="h-4 w-auto object-contain" />
               <span>{gameConfig.publisher}</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground font-heading">

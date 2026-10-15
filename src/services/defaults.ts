@@ -36,34 +36,46 @@ export interface UniversalGamePackage {
 }
 
 export const DEFAULT_MLBB_PACKAGES: UniversalGamePackage[] = [
-  { id: "mlbb-86", name: "86 Diamonds", amount: 86, price: 21000 },
-  { id: "mlbb-172", name: "172 Diamonds", amount: 172, price: 42000 },
-  { id: "mlbb-257", name: "257 Diamonds", amount: 257, price: 63000, popular: true },
-  { id: "mlbb-344", name: "344 Diamonds", amount: 344, price: 84000 },
-  { id: "mlbb-706", name: "706 Diamonds", amount: 706, price: 168000 },
-  { id: "mlbb-wdp", name: "Weekly Diamond Pass (WDP)", amount: 1, price: 27500, popular: true },
+  { id: "mlbb-250", name: "250 Diamonds", amount: 250, price: 50000 },
+  { id: "mlbb-350", name: "350 Diamonds", amount: 350, price: 75000 },
+  { id: "mlbb-500", name: "500 Diamonds", amount: 500, price: 100000, popular: true },
+  { id: "mlbb-750", name: "750 Diamonds", amount: 750, price: 200000 },
+  { id: "mlbb-1000", name: "1.000 Diamonds", amount: 1000, price: 300000 },
+  { id: "mlbb-1200", name: "1.200 Diamonds", amount: 1200, price: 400000 },
+  { id: "mlbb-1800", name: "1.800 Diamonds", amount: 1800, price: 500000 },
 ];
 
 export const DEFAULT_PUBG_PACKAGES: UniversalGamePackage[] = [
-  { id: "pubg-60", name: "60 UC", amount: 60, price: 15000 },
-  { id: "pubg-325", name: "325 UC", amount: 325, price: 75000, popular: true },
-  { id: "pubg-660", name: "660 UC", amount: 660, price: 150000, popular: true },
-  { id: "pubg-1800", name: "1800 UC", amount: 1800, price: 375000 },
+  { id: "pubg-1000", name: "1.000 UC", amount: 1000, price: 35000 },
+  { id: "pubg-1200", name: "1.200 UC", amount: 1200, price: 45000 },
+  { id: "pubg-1700", name: "1.700 UC", amount: 1700, price: 55000 },
+  { id: "pubg-2100", name: "2.100 UC", amount: 2100, price: 80000 },
+  { id: "pubg-2600", name: "2.600 UC", amount: 2600, price: 100000, popular: true },
+  { id: "pubg-3600", name: "3.600 UC", amount: 3600, price: 200000 },
+  { id: "pubg-4200", name: "4.200 UC", amount: 4200, price: 300000 },
+  { id: "pubg-5300", name: "5.300 UC", amount: 5300, price: 400000 },
+  { id: "pubg-6100", name: "6.100 UC", amount: 6100, price: 500000 },
 ];
 
 export const DEFAULT_FREEFIRE_PACKAGES: UniversalGamePackage[] = [
-  { id: "ff-70", name: "70 Diamonds", amount: 70, price: 10000 },
-  { id: "ff-140", name: "140 Diamonds", amount: 140, price: 20000 },
-  { id: "ff-355", name: "355 Diamonds", amount: 355, price: 50000, popular: true },
-  { id: "ff-720", name: "720 Diamonds", amount: 720, price: 100000, popular: true },
-  { id: "ff-member", name: "Membership Mingguan", amount: 1, price: 30000 },
+  { id: "ff-600", name: "600 Diamonds", amount: 600, price: 50000 },
+  { id: "ff-1000", name: "1.000 Diamonds", amount: 1000, price: 70000 },
+  { id: "ff-1200", name: "1.200 Diamonds", amount: 1200, price: 100000, popular: true },
+  { id: "ff-1800", name: "1.800 Diamonds", amount: 1800, price: 150000 },
+  { id: "ff-2500", name: "2.500 Diamonds", amount: 2500, price: 200000 },
+  { id: "ff-3200", name: "3.200 Diamonds", amount: 3200, price: 300000 },
+  { id: "ff-4000", name: "4.000 Diamonds", amount: 4000, price: 400000 },
+  { id: "ff-5200", name: "5.200 Diamonds", amount: 5200, price: 500000 },
 ];
 
 export const DEFAULT_FCMOBILE_PACKAGES: UniversalGamePackage[] = [
-  { id: "fcm-100", name: "100 FC Points", amount: 100, price: 16000 },
-  { id: "fcm-500", name: "500 FC Points", amount: 500, price: 79000, popular: true },
-  { id: "fcm-1050", name: "1050 FC Points", amount: 1050, price: 159000, popular: true },
-  { id: "fcm-2200", name: "2200 FC Points", amount: 2200, price: 319000 },
+  { id: "fcm-578", name: "578 Coins", amount: 578, price: 50000 },
+  { id: "fcm-788", name: "788 Coins", amount: 788, price: 75000 },
+  { id: "fcm-1000", name: "1.000 Coins", amount: 1000, price: 100000, popular: true },
+  { id: "fcm-1800", name: "1.800 Coins", amount: 1800, price: 200000 },
+  { id: "fcm-2400", name: "2.400 Coins", amount: 2400, price: 300000 },
+  { id: "fcm-3000", name: "3.000 Coins", amount: 3000, price: 400000 },
+  { id: "fcm-4200", name: "4.200 Coins", amount: 4200, price: 500000 },
 ];
 
 export function getDefaultPackagesForGame(gameId: string): UniversalGamePackage[] {
