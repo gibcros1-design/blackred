@@ -3,7 +3,6 @@
 import { db } from "@/db";
 import { orders } from "@/db/schema";
 import { generateOrderId, generateOrderCode, generateUniqueCode, randomToken } from "@/services/order";
-import { sendTelegramOrderNotification } from "@/services/telegram";
 import { getConfigValue, PricingItem } from "@/services/config";
 import { DEFAULT_PRICING } from "@/services/defaults";
 import { eq } from "drizzle-orm";
@@ -112,15 +111,6 @@ export async function createOrderAction(formData: {
 
     await db.insert(orders).values(newOrder);
 
-    // Kirim notifikasi Telegram awal pesanan baru ke admin
-    sendTelegramOrderNotification({
-      ...newOrder,
-      paymentProof: null,
-      adminNote: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }).catch((err) => console.error("Gagal kirim notif telegram order baru:", err));
-
     // Token tidak boleh ikut ke klien — cukup di session wizard
     const { proofToken: _hidden, ...order } = newOrder;
     return { success: true as const, order, proofToken };
@@ -162,16 +152,6 @@ export async function submitPaymentProofAction(orderId: string, proofToken: stri
       updatedAt: new Date().toISOString(),
     })
     .where(eq(orders.orderId, orderId));
-
-  const updatedOrder = await db.query.orders.findFirst({
-    where: eq(orders.orderId, orderId),
-  });
-
-  if (updatedOrder) {
-    sendTelegramOrderNotification(updatedOrder).catch((err) =>
-      console.error("Telegram notification error:", err)
-    );
-  }
 
   return { success: true };
 }

@@ -29,12 +29,34 @@ async function sendProofToTelegram(file: File, order: typeof orders.$inferSelect
   const chatId = (await getConfigValue<string>("telegram_admin_chat_id", "")) || process.env.TELEGRAM_ADMIN_CHAT_ID;
   if (!botToken || !chatId) return false;
 
+  const esc = escapeTelegramHtml;
+  const gameName = order.game === "mlbb" ? "Mobile Legends: Bang Bang" :
+                   order.game === "pubg" ? "PUBG Mobile" :
+                   order.game === "freefire" ? "Free Fire" :
+                   order.game === "fcmobile" ? "FC Mobile" : "Roblox";
+
+  const accountDetail = order.gameZoneId
+    ? `<code>${esc(order.gameUserId || order.robloxUsername)}</code> (Server/Zone: <code>${esc(order.gameZoneId)}</code>)`
+    : `<code>${esc(order.gameUserId || order.robloxUsername || "-")}</code>`;
+
+  const itemDetail = order.itemName || (order.robuxAmount ? `${order.robuxAmount.toLocaleString("id-ID")} Robux` : "-");
+  const waNumber = order.whatsapp ? order.whatsapp.replace(/^0/, "62") : "";
+  const waLink = waNumber ? `https://wa.me/${esc(waNumber)}` : "-";
+
   const caption = [
-    "📥 <b>Bukti transfer diterima</b>",
-    `Order ID: <code>${escapeTelegramHtml(order.orderId)}</code>`,
-    `Nama: ${escapeTelegramHtml(order.name)}`,
-    `Total: ${formatRupiah(order.totalPrice)}`,
-    `Username Roblox: <b>${escapeTelegramHtml(order.robloxUsername)}</b>`,
+    "📥 <b>BUKTI TRANSFER DITERIMA (ORDER MASUK)</b>",
+    "━━━━━━━━━━━━━━━━━━",
+    `🆔 <b>Order ID:</b> <code>${esc(order.orderId)}</code>`,
+    `🔑 <b>Kode Cek:</b> <code>${esc(order.code)}</code>`,
+    `🎮 <b>Game:</b> <b>${esc(gameName)}</b>`,
+    `🎯 <b>Item:</b> <b>${esc(itemDetail)}</b>`,
+    `👤 <b>Akun:</b> ${accountDetail}`,
+    `🏷️ <b>Nama Pembeli:</b> ${esc(order.name)}`,
+    `💰 <b>Total Bayar:</b> <b>${formatRupiah(order.totalPrice)}</b>`,
+    `📱 <b>WhatsApp:</b> ${waLink}`,
+    `📊 <b>Status:</b> <b>MENUNGGU VERIFIKASI</b>`,
+    "━━━━━━━━━━━━━━━━━━",
+    "⚡ <i>Segera cek mutasi rekening/e-wallet & proses pesanan.</i>",
   ].join("\n");
 
   const form = new FormData();
